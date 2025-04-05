@@ -15,6 +15,18 @@ TOKEN_COC = os.getenv('TOKEN_COC')
 # Create the bot.
 bot = commands.Bot(command_prefix = '!', intents = discord.Intents.default())
 
-# Run the bot.
+@bot.event
+async def on_ready():
+    activity = discord.Activity(type = discord.ActivityType.watching, name = "Clash of Clans")
+    await bot.change_presence(activity = activity)
+
+@bot.command(name = 'ping')
+async def ping(ctx):
+    latency : int = round(bot.latency * 1000)  # Convert latency to milliseconds
+    await ctx.send(f'Pong! Latency: {latency}ms')
+
 if __name__ == '__main__':
+    bot.load_extension('cog_moderator')
+
+    # Run the bot.
     bot.run(token = TOKEN_DISCORD)
