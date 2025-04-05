@@ -1,0 +1,77 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+bin/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+include/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Poetry specific
+poetry.lock
+
+# Pytest
+.cache
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Environments
+.env
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*~
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
