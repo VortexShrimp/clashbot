@@ -1,34 +1,35 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 import coc
 import os
 import dotenv
 
-# Load the .env file that holds the tokens.
-dotenv.load_dotenv()
+class SkebengaBot(commands.Bot):
+    def __init__(self):
+        intents = discord.Intents.default()
+        intents.message_content = True 
+        super().__init__(command_prefix='!', intents=intents)
 
-# Get our token from the .env file.
-TOKEN_DISCORD : str = os.getenv('TOKEN_DISCORD')
-TOKEN_COC = os.getenv('TOKEN_COC')
+    async def setup_hook(self):
+        await self.load_extension('cog_moderator')
 
-# Create the bot.
-intents = discord.Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix = '!', intents = intents)
+    async def on_ready(self):
+        print(f'Logged in as {self.user}')
+        activity = discord.Activity(type=discord.ActivityType.watching, name='Clash of Clans')
+        await self.change_presence(activity=activity)
 
-@bot.event
-async def on_ready():
-    activity = discord.Activity(type = discord.ActivityType.watching, name = "Clash of Clans")
-    await bot.change_presence(activity = activity)
-
-@bot.command(name = 'ping')
-async def ping(ctx):
-    latency : int = round(bot.latency * 1000)  # Convert latency to milliseconds
-    await ctx.send(f'Pong! Latency: {latency}ms')
+    #TODO: Move this into some sort of misc cog?
+    #@commands.command()
+    #async def ping(self, ctx : commands.Context):
+        #latency : int = round(self.latency * 1000)
+        #await ctx.send(content=f'Pong! Latency: {latency}ms')
 
 if __name__ == '__main__':
-    bot.load_extension('cog_moderator')
+    if dotenv.load_dotenv() == True:
+        # Get our tokens from the .env file.
+        discord_token : str = os.getenv('TOKEN_DISCORD')
+        coc_token : str = os.getenv('TOKEN_COC')
 
-    # Run the bot.
-    bot.run(token = TOKEN_DISCORD)
+        bot = SkebengaBot()
+        bot.run(discord_token)
