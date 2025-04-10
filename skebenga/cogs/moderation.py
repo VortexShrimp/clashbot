@@ -1,8 +1,6 @@
 import discord
 from discord.ext import commands
 
-# Simple moderator commands.
-# Requires admin in the server.
 class ModeratorCog(commands.Cog):
     def __init__(self, bot : commands.Bot):
         self.bot : commands.Bot = bot
