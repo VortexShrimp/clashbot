@@ -19,6 +19,9 @@ DISCORD_TOKEN = "App token"
 # Clash of Clans API
 COC_EMAIL = "Your email"
 COC_PASSWORD = "Your password"
+
+# The tag of the clan that you want to track
+COC_CLANTAG = "Your tag"
 ```
 
 ## Usage Example

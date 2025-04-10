@@ -7,8 +7,10 @@ import dotenv
 import asyncio
 
 class SkebengaBot(commands.Bot):
-    def __init__(self, coc_client : coc.EventsClient):
+    def __init__(self, coc_client : coc.EventsClient, coc_clantag : str):
         self.coc_client : coc.EventsClient = coc_client
+        self.coc_clantag = coc_clantag
+
         super().__init__(command_prefix='!', intents=discord.Intents.all())
 
     # Load all the cogs used in the bot here.
@@ -23,7 +25,7 @@ class SkebengaBot(commands.Bot):
                     print(f'Failed to load extension {file}')
                     print(f'[error] {error}')
 
-        self.tree.sync()
+        await self.tree.sync()
 
         # Example discord bot to follow.
         # https://github.com/mathsman5133/coc.py/blob/master/examples/discord_bot_with_cogs.py
@@ -38,8 +40,10 @@ class SkebengaBot(commands.Bot):
 async def main():
     # Get our tokens from the .env file.
     discord_token : str = os.getenv('DISCORD_TOKEN')
+
     coc_email : str = os.getenv('COC_EMAIL')
     coc_password : str = os.getenv('COC_PASSWORD')
+    coc_clantag : str = os.getenv('COC_CLANTAG')
 
     async with coc.EventsClient() as coc_client:
         # Attempt to log into the CoC API.
@@ -50,8 +54,8 @@ async def main():
             exit(error)
 
         # Run the discord bot.
-        bot = SkebengaBot(coc_client=coc_client)
-        await bot.start(token=discord_token)
+        bot = SkebengaBot(coc_client, coc_clantag)
+        await bot.start(discord_token)
 
 if __name__ == '__main__':
     if dotenv.load_dotenv() == True:
