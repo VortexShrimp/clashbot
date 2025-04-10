@@ -4,23 +4,26 @@ Discord bot for the *Amaphara* clan.
 
 ## Requirements
 
-- [python](https://www.python.org/downloads/) [required]
-- [pipx](https://pipx.pypa.io/latest/installation/) [optional]
-- [poetry](https://python-poetry.org/) [optional]
+This project uses `poetry` to manage its dependencies.
 
-In the project's root directory, create a file called `.env` and add the following:
+- Install [python](https://www.python.org/downloads/).
+- Install [pipx](https://pipx.pypa.io/latest/installation/). `python -m pip install --user pipx`
+- Install [poetry](https://python-poetry.org/). `pipx install poetry`
+
+Tokens and other sensistive data is stored in a `.env` file in the project's root.
 
 ```dotenv
-TOKEN_DISCORD = "Your Discord bot token"
-TOKEN_COC = "Your Clash of Clans API token"
+# Discord API
+DISCORD_TOKEN = "App token"
+
+# Clash of Clans API
+COC_EMAIL = "Your email"
+COC_PASSWORD = "Your password"
 ```
 
 ## Usage Example
 
-1. Install [Python](https://www.python.org/downloads/) on your OS.
-2. Install `pipx` through Python. `python -m pip install --user pipx`
-3. Install `poetry` through pipx. `pipx install poetry`
-4. Clone this repo. `git clone https://github.com/VortexShrimp/skebenga.git`
-5. Create a `.env` file in the root. Add `TOKEN_DISCORD = "xxx"` and `TOKEN_COC = "xxx"`.
-6. Install the `Poetry` dependencies. `poetry install`
-7. Run the bot. `poetry run python skebenga/main.py`
+1. Clone this repo. `git clone https://github.com/VortexShrimp/skebenga.git`
+2. Create a `.env` file in the root with your data.
+3. Install the `Poetry` dependencies. `poetry install`
+4. Run the bot. `poetry run python skebenga/main.py`
