@@ -25,7 +25,7 @@ class ModeratorCog(commands.Cog):
     @kick.error
     @ban.error
     @say.error
-    async def command_error(self, ctx, error):
+    async def handle_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
             await ctx.send('You do not have the required permissions to use this command.')
         elif isinstance(error, commands.MissingRequiredArgument):

@@ -6,6 +6,7 @@ import os
 import dotenv
 import asyncio
 
+# The main bot class.
 class SkebengaBot(commands.Bot):
     def __init__(self, coc_client : coc.EventsClient, coc_clantag : str):
         self.coc_client : coc.EventsClient = coc_client
@@ -13,22 +14,20 @@ class SkebengaBot(commands.Bot):
 
         super().__init__(command_prefix='!', intents=discord.Intents.all())
 
-    # Load all the cogs used in the bot here.
-    async def setup_hook(self):
-        # Try load all the bot's cogs.
+    # Load any cogs found in the cogs directory.
+    async def setup_cogs(self):
         for file in os.listdir(f'./skebenga/cogs'):
             if file.endswith('.py'):
                 try:
                     await self.load_extension(f'cogs.{file[:-3]}')
                     print(f'Loaded {file} extension')
                 except Exception as error:
-                    print(f'Failed to load extension {file}')
-                    print(f'[error] {error}')
+                    print(f'[error] Failed to load extension {file}. Error {error}')
 
+    async def setup_coc_api(self):
         # Example discord bot to follow.
         # https://github.com/mathsman5133/coc.py/blob/master/examples/discord_bot_with_cogs.py
 
-        # Start tracking your clan.
         self.coc_client.add_clan_updates(self.coc_clantag)
 
         try:
@@ -47,12 +46,14 @@ class SkebengaBot(commands.Bot):
             on_member_recieved_donation
         )
 
+    async def setup_hook(self):
+        await self.setup_cogs()
+        await self.setup_coc_api()
+
     async def on_ready(self):
         print(f'Logged in as {self.user}.')
-
         activity = discord.Activity(type=discord.ActivityType.watching, name='Clash of Clans')
         await self.change_presence(activity=activity)
-        print(f'Presence updated.')
 
 @coc.ClanEvents.member_join()
 async def on_clan_member_join(old_member : coc.ClanMember, new_member : coc.ClanMember):
@@ -94,8 +95,11 @@ async def main():
 
 if __name__ == '__main__':
     if dotenv.load_dotenv() == True:
+        loop = asyncio.new_event_loop()
+
         try:
-            asyncio.run(main())
+            loop.run_until_complete(main())
+            loop.run_forever()
         except KeyboardInterrupt:
             ...
     else:

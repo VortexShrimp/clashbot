@@ -28,5 +28,5 @@ COC_CLANTAG = "Your tag"
 
 1. Clone this repo. `git clone https://github.com/VortexShrimp/skebenga.git`
 2. Create a `.env` file in the root with your data.
-3. Install the `Poetry` dependencies. `poetry install`
+3. Install the `poetry` dependencies. `poetry install`
 4. Run the bot. `poetry run python skebenga/main.py`

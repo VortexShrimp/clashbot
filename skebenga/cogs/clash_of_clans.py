@@ -51,5 +51,12 @@ class ClashOfClansCog(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @player_info.error
+    async def handle_error(self, ctx : commands.Context, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f'Missing required argument. `{error.param}`')
+        else:
+            await ctx.send('Something went wrong.')
+
 async def setup(bot):
     await bot.add_cog(ClashOfClansCog(bot))
