@@ -1,10 +1,7 @@
 import discord
 from discord.ext import commands
 
-import coc
-
-# So that we can access the CoC fields.
-from main import SkebengaBot
+from main import SkebengaBot, coc
 
 class ClashOfClansCog(commands.Cog):
     def __init__(self, bot : SkebengaBot):
@@ -46,7 +43,7 @@ class ClashOfClansCog(commands.Cog):
             f'`{'Capital Contribution':<20}` `{player.clan_capital_contributions:<20}`\n'
         )
 
-        embed = discord.Embed(colour=discord.Colour.yellow(), description=frame, title=f'Player Info')
+        embed = discord.Embed(colour=discord.Colour.yellow(), title=f'Player Info', description=frame)
         embed.set_thumbnail(url=player.clan.badge.url)
 
         await ctx.send(embed=embed)
@@ -54,9 +51,13 @@ class ClashOfClansCog(commands.Cog):
     @player_info.error
     async def handle_error(self, ctx : commands.Context, error):
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f'Missing required argument. `{error.param}`')
+            message = f'Missing required argument for this command.\n`{error.param}`'
+            embed = discord.Embed(colour=discord.Colour.red(), title='Error', description=message)
+            await ctx.send(embed=embed)
         else:
-            await ctx.send('Something went wrong.')
+            message = 'Something went wrong...'
+            embed = discord.Embed(colour=discord.Colour.red(), title='Error', description=message)
+            await ctx.send(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(ClashOfClansCog(bot))

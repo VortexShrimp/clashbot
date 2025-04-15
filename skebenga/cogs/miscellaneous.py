@@ -8,7 +8,7 @@ class MiscellaneousCog(commands.Cog):
     @commands.command(name='ping')
     async def ping(self, ctx : commands.Context):
         latency : int = round(self.bot.latency * 1000)
-        await ctx.send(content=f'Pong! `{latency}ms`')
+        await ctx.reply(content=f'Pong! `{latency}ms`')
 
-async def setup(bot):
+async def setup(bot : commands.Bot):
     await bot.add_cog(MiscellaneousCog(bot))

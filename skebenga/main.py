@@ -44,7 +44,7 @@ class SkebengaBot(commands.Bot):
         try:
             clan : coc.Clan = await self.coc_client.get_clan(self.coc_clantag)
             print(f'Tracking {clan.name} with tag {clan.tag}')
-        except:
+        except coc.errors.ClashOfClansException as error:
             print(f'[error] Failed to start tracking {self.coc_clantag}')
 
         self.coc_client.add_player_updates(*[member.tag for member in clan.members])

@@ -7,31 +7,43 @@ class ModeratorCog(commands.Cog):
 
     @commands.command(name='kick')
     @commands.has_permissions(administrator=True)
-    async def kick(self, ctx, member: discord.Member, *, reason=None):
-        await member.kick(reason = reason)
-        await ctx.send(f'User {member} has been kicked for {reason}')
+    async def kick(self, ctx : commands.Context, member: discord.Member, *, reason=None):
+        await member.kick(reason=reason)
+        if reason == None:
+            await ctx.send(f'User {member} has been kicked.')
+        else:
+            await ctx.send(f'User {member} has been kicked for {reason}.')
 
     @commands.command(name='ban')
     @commands.has_permissions(administrator=True)
-    async def ban(self, ctx, member: discord.Member, *, reason=None):
+    async def ban(self, ctx : commands.Context, member: discord.Member, *, reason=None):
         await member.ban(reason=reason)
-        await ctx.send(f'User {member} has been banned for {reason}')
+        if reason == None:
+            await ctx.send(f'User {member} has been banned.')
+        else:
+            await ctx.send(f'User {member} has been banned for {reason}.')
 
     @commands.command(name='say')
     @commands.has_permissions(administrator=True)
-    async def say(self, ctx, *, message):
+    async def say(self, ctx : commands.Context, *, message : str):
         await ctx.send(message)
 
     @kick.error
     @ban.error
     @say.error
-    async def handle_error(self, ctx, error):
+    async def handle_error(self, ctx : commands.Context, error):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send('You do not have the required permissions to use this command.')
+            message = 'You do not have the required permissions to use this command.'
+            embed = discord.Embed(colour=discord.Colour.red(), title='Error', description=message)
+            await ctx.send(embed=embed)
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send('You have not provided a required argument for this command.')
+            message = f'Missing required argument for this command.\n`{error.param}`'
+            embed = discord.Embed(colour=discord.Colour.red(), title='Error', description=message)
+            await ctx.send(embed=embed)
         else:
-            await ctx.send('An error occurred while processing the command.')
+            message = 'Something went wrong...'
+            embed = discord.Embed(colour=discord.Colour.red(), title='Error', description=message)
+            await ctx.send(embed=embed)
 
-async def setup(bot):
+async def setup(bot : commands.Bot):
     await bot.add_cog(ModeratorCog(bot))
