@@ -34,16 +34,15 @@ class ModeratorCog(commands.Cog):
     async def handle_error(self, ctx : commands.Context, error):
         if isinstance(error, commands.MissingPermissions):
             message = 'You do not have the required permissions to use this command.'
-            embed = discord.Embed(colour=discord.Colour.red(), title='Error', description=message)
-            await ctx.send(embed=embed)
         elif isinstance(error, commands.MissingRequiredArgument):
             message = f'Missing required argument for this command.\n`{error.param}`'
-            embed = discord.Embed(colour=discord.Colour.red(), title='Error', description=message)
-            await ctx.send(embed=embed)
         else:
             message = 'Something went wrong...'
-            embed = discord.Embed(colour=discord.Colour.red(), title='Error', description=message)
-            await ctx.send(embed=embed)
+
+        embed = discord.Embed(colour=discord.Colour.red(),
+                              title='Error',
+                              description=message)
+        await ctx.send(embed=embed)
 
 async def setup(bot : commands.Bot):
     await bot.add_cog(ModeratorCog(bot))
