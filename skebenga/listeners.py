@@ -45,7 +45,7 @@ async def on_clan_member_leave(old_member: coc.ClanMember, new_member: coc.ClanM
     embed = discord.Embed(colour=discord.Colour.red(),
                           title='Player Left',
                           description=f'Player `{new_member.name} ({new_member.tag})` has left the clan.')
-    embed.set_thumbnail(url=new_member.clan.badge.url)
+    embed.set_thumbnail(url=old_member.clan.badge.url)
     
     await send_embed_via_webhook(webhook_url, embed)
 
