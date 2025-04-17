@@ -41,6 +41,7 @@ class SkebengaBot(commands.Bot):
         # https://peps.python.org/pep-0008/
 
         self.coc_client.add_clan_updates(self.coc_clantag)
+        self.coc_client.add_war_updates(self.coc_clantag)
 
         try:
             clan: coc.Clan = await self.coc_client.get_clan(self.coc_clantag)
@@ -56,7 +57,11 @@ class SkebengaBot(commands.Bot):
             listeners.on_clan_member_leave,
             listeners.on_clan_level_changed,
             listeners.on_clan_description_changed,
-            listeners.on_clan_badge_changed
+            listeners.on_clan_badge_changed,
+
+            listeners.on_new_war,
+            listeners.on_war_attack,
+            listeners.on_war_state_changed
         )
 
 async def main() -> None:
