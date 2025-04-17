@@ -6,11 +6,11 @@ import coc
 from main import SkebengaBot
 
 class ClashOfClansCog(commands.Cog):
-    def __init__(self, bot : SkebengaBot) -> None:
-        self.bot : SkebengaBot = bot
+    def __init__(self, bot: SkebengaBot) -> None:
+        self.bot: SkebengaBot = bot
 
     @commands.command(name='player_info')
-    async def player_info(self, ctx : commands.Context, player_tag : str) -> None:
+    async def player_info(self, ctx: commands.Context, player_tag: str) -> None:
         # Make sure the player's tag is valid.
         if not coc.utils.is_valid_tag(player_tag):
             embed = discord.Embed(colour=discord.Colour.red(), title=f'Error', description='Invalid player tag format provided.')
@@ -19,7 +19,7 @@ class ClashOfClansCog(commands.Cog):
         
         # Attempt to get the player.
         try:
-            player : coc.Player = await self.bot.coc_client.get_player(player_tag)
+            player: coc.Player = await self.bot.coc_client.get_player(player_tag)
         except coc.NotFound:
             embed = discord.Embed(colour=discord.Colour.red(), title=f'Error', description='Unable to get the desired player.')
             await ctx.send(embed=embed)
@@ -54,9 +54,9 @@ class ClashOfClansCog(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name='clan_members')
-    async def clan_members(self, ctx : commands.Context, clan_tag : str = "default") -> None:
+    async def clan_members(self, ctx: commands.Context, clan_tag: str = "default") -> None:
         # If no clan tag is provided, use the tag found in the .env file.
-        desired_clan_tag : str = self.bot.coc_clantag if clan_tag == "default" else clan_tag
+        desired_clan_tag: str = self.bot.coc_clantag if clan_tag == "default" else clan_tag
 
         # Make sure the clan's tag is valid.
         if coc.utils.is_valid_tag(desired_clan_tag) == False:
@@ -68,7 +68,7 @@ class ClashOfClansCog(commands.Cog):
 
         # Attempt to get the clan.
         try:
-            clan : coc.Clan = await self.bot.coc_client.get_clan(desired_clan_tag)
+            clan: coc.Clan = await self.bot.coc_client.get_clan(desired_clan_tag)
         except coc.NotFound:
             embed = discord.Embed(colour=discord.Colour.red(),
                                   title=f'Error',
@@ -82,8 +82,8 @@ class ClashOfClansCog(commands.Cog):
             await ctx.send(embed=embed)
             return
 
-        frame : str = f'{clan.name} ({clan.tag}) [{clan.member_count}/50 members]\n\n'
-        number : int = 1
+        frame: str = f'{clan.name} ({clan.tag}) has [{clan.member_count}/50] members.\n\n'
+        number: int = 1
 
         for member in clan.members:
             frame += (f'`{f'{number}. {member.name}':<20}` 'f'`{member.tag:<15}`\n')
@@ -95,7 +95,7 @@ class ClashOfClansCog(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name='clan_info')
-    async def clan_info(self, ctx : commands.Context, clan_tag : str = "default") -> None:
+    async def clan_info(self, ctx: commands.Context, clan_tag: str = "default") -> None:
         # If no clan tag is provided, use the tag found in the .env file.
         desired_clan_tag : str = self.bot.coc_clantag if clan_tag == "default" else clan_tag
 
@@ -109,7 +109,7 @@ class ClashOfClansCog(commands.Cog):
 
         # Attempt to get the clan.
         try:
-            clan : coc.Clan = await self.bot.coc_client.get_clan(desired_clan_tag)
+            clan: coc.Clan = await self.bot.coc_client.get_clan(desired_clan_tag)
         except coc.NotFound:
             embed = discord.Embed(colour=discord.Colour.red(),
                                   title=f'Error',
@@ -132,7 +132,7 @@ class ClashOfClansCog(commands.Cog):
                     value=clan.description,
                     inline=False)
 
-        leader : coc.ClanMember = clan.get_member_by(role=coc.Role.leader)
+        leader: coc.ClanMember = clan.get_member_by(role=coc.Role.leader)
 
         embed.add_field(name='Leader',
                     value=f'{leader.name} ({leader.tag})',
@@ -198,8 +198,8 @@ class ClashOfClansCog(commands.Cog):
         )
 
         # If the the clan has districts info, add it to the embed.
-        if len(clan.capital_districts) > 0:
-            frame : str = ''
+        if clan.capital_districts:
+            frame: str = ''
 
             for district in clan.capital_districts:
                 frame += (f'`{f'{district.name}:':<20}` 'f'`{district.hall_level:<15}`\n')
@@ -213,7 +213,7 @@ class ClashOfClansCog(commands.Cog):
     @player_info.error
     @clan_info.error
     @clan_members.error
-    async def handle_error(self, ctx : commands.Context, error):
+    async def handle_error(self, ctx: commands.Context, error):
         if isinstance(error, commands.MissingRequiredArgument):
             message = f'Missing required argument for this command.\n`{error.param}`'
         else:
@@ -224,5 +224,5 @@ class ClashOfClansCog(commands.Cog):
                               description=message)
         await ctx.send(embed=embed)
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(ClashOfClansCog(bot))

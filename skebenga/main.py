@@ -10,23 +10,23 @@ import asyncio
 
 # The main bot class.
 class SkebengaBot(commands.Bot):
-    def __init__(self, coc_client : coc.EventsClient, coc_clantag : str):
-        self.coc_client : coc.EventsClient = coc_client
-        self.coc_clantag : str = coc_clantag
+    def __init__(self, coc_client: coc.EventsClient, coc_clantag: str) -> None:
+        self.coc_client: coc.EventsClient = coc_client
+        self.coc_clantag: str = coc_clantag
 
         super().__init__(command_prefix='!', intents=discord.Intents.all())
 
-    async def setup_hook(self):
+    async def setup_hook(self) -> None:
         await self.setup_cogs()
         await self.setup_coc_api()
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         print(f'Logged in as {self.user}.')
         activity = discord.Activity(type=discord.ActivityType.watching, name='Clash of Clans')
         await self.change_presence(activity=activity)
 
     # Load any cogs found in the cogs directory.
-    async def setup_cogs(self):
+    async def setup_cogs(self) -> None:
         for file in os.listdir(f'./skebenga/cogs'):
             if file.endswith('.py'):
                 try:
@@ -35,16 +35,16 @@ class SkebengaBot(commands.Bot):
                 except Exception as error:
                     print(f'[error] Failed to load extension {file}. Error {error}')
 
-    async def setup_coc_api(self):
+    async def setup_coc_api(self) -> None:
         # Example discord bot to follow.
         # https://github.com/mathsman5133/coc.py/blob/master/examples/discord_bot_with_cogs.py
 
         self.coc_client.add_clan_updates(self.coc_clantag)
 
         try:
-            clan : coc.Clan = await self.coc_client.get_clan(self.coc_clantag)
+            clan: coc.Clan = await self.coc_client.get_clan(self.coc_clantag)
             print(f'Tracking {clan.name} with tag {clan.tag}')
-        except coc.errors.ClashOfClansException as error:
+        except coc.ClashOfClansException:
             print(f'[error] Failed to start tracking {self.coc_clantag}')
 
         self.coc_client.add_player_updates(*[member.tag for member in clan.members])
@@ -57,13 +57,13 @@ class SkebengaBot(commands.Bot):
             coc_listeners.on_clan_member_recieved_donation
         )
 
-async def main():
+async def main() -> None:
     # Get our tokens from the .env file.
-    discord_token : str = os.getenv('DISCORD_TOKEN')
+    discord_token: str = os.getenv('DISCORD_TOKEN')
 
-    coc_email : str = os.getenv('COC_EMAIL')
-    coc_password : str = os.getenv('COC_PASSWORD')
-    coc_clantag : str = os.getenv('COC_CLANTAG')
+    coc_email: str = os.getenv('COC_EMAIL')
+    coc_password: str = os.getenv('COC_PASSWORD')
+    coc_clantag: str = os.getenv('COC_CLANTAG')
 
     async with coc.EventsClient() as coc_client:
         # Attempt to log into the CoC API.
