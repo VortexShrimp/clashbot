@@ -16,14 +16,17 @@ This project uses `poetry` to easily manage its dependencies and environment.
 Sensitive data is stored in a `.env` file in the project's root.
 
 ```dotenv
-# Discord API
+# Discord API.
 DISCORD_TOKEN = "App token"
 
-# Clash of Clans API
+# Discord webhook for clan events.
+DISCORD_CLAN_WEBHOOK = "Webhook URL"
+
+# Clash of Clans API.
 COC_EMAIL = "Your email"
 COC_PASSWORD = "Your password"
 
-# The tag of the clan that you want to track
+# The tag of the clan that you want to track.
 COC_CLANTAG = "Your tag"
 ```
 

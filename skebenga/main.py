@@ -1,9 +1,9 @@
-import coc_listeners
-from coc_listeners import coc
+import listeners
 
 import discord
 from discord.ext import commands
 
+import coc
 import os
 import dotenv
 import asyncio
@@ -38,6 +38,7 @@ class SkebengaBot(commands.Bot):
     async def setup_coc_api(self) -> None:
         # Example discord bot to follow.
         # https://github.com/mathsman5133/coc.py/blob/master/examples/discord_bot_with_cogs.py
+        # https://peps.python.org/pep-0008/
 
         self.coc_client.add_clan_updates(self.coc_clantag)
 
@@ -51,10 +52,10 @@ class SkebengaBot(commands.Bot):
 
         # Add our custom event listeners.
         self.coc_client.add_events(
-            coc_listeners.on_clan_member_join,
-            coc_listeners.on_clan_member_leave,
-            coc_listeners.on_clan_member_sent_donation,
-            coc_listeners.on_clan_member_recieved_donation
+            listeners.on_clan_member_join,
+            listeners.on_clan_member_leave,
+            listeners.on_clan_level_changed,
+            listeners.on_clan_description_changed
         )
 
 async def main() -> None:
