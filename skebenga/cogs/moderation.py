@@ -9,7 +9,7 @@ class ModeratorCog(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def kick(self, ctx: commands.Context, member: discord.Member, *, reason=None):
         await member.kick(reason=reason)
-        if reason == None:
+        if reason is None:
             await ctx.send(f'User {member} has been kicked.')
         else:
             await ctx.send(f'User {member} has been kicked for {reason}.')
@@ -18,7 +18,7 @@ class ModeratorCog(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def ban(self, ctx: commands.Context, member: discord.Member, *, reason=None):
         await member.ban(reason=reason)
-        if reason == None:
+        if reason is None:
             await ctx.send(f'User {member} has been banned.')
         else:
             await ctx.send(f'User {member} has been banned for {reason}.')
@@ -28,9 +28,24 @@ class ModeratorCog(commands.Cog):
     async def say(self, ctx: commands.Context, *, message: str):
         await ctx.send(message)
 
+    @commands.command(name='purge')
+    @commands.has_permissions(administrator=True)
+    async def purge(self, ctx: commands.Context, amount: int):
+        if amount < 1:
+            response: discord.Message = await ctx.reply("Please specify a number greater than 0.")
+            await response.delete(delay=3)
+            return
+        
+        await ctx.channel.purge(limit=amount)
+
+        # Send a confirmation and delete it after a small delay.
+        confirmation: discord.Message = await ctx.send(f"Deleted {amount} messages.")
+        await confirmation.delete(delay=3)
+
     @kick.error
     @ban.error
     @say.error
+    @purge.error
     async def handle_error(self, ctx: commands.Context, error):
         if isinstance(error, commands.MissingPermissions):
             message = 'You do not have the required permissions to use this command.'
