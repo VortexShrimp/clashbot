@@ -55,7 +55,8 @@ class SkebengaBot(commands.Bot):
             listeners.on_clan_member_join,
             listeners.on_clan_member_leave,
             listeners.on_clan_level_changed,
-            listeners.on_clan_description_changed
+            listeners.on_clan_description_changed,
+            listeners.on_clan_badge_changed
         )
 
 async def main() -> None:
