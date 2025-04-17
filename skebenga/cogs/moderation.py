@@ -37,7 +37,7 @@ class ModeratorCog(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):
             message = f'Missing required argument for this command.\n`{error.param}`'
         else:
-            message = 'Something went wrong...'
+            message = f'{error}'
 
         embed = discord.Embed(colour=discord.Colour.red(),
                               title='Error',

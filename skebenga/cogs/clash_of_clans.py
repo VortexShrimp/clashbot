@@ -26,7 +26,7 @@ class ClashOfClansCog(commands.Cog):
             return
         
         frame = ''
-        
+
         frame += f'`{'TH Level:':<20}` `{player.town_hall:<20}`\n'
         if player.town_hall > 11:
             frame += f'`{'TH Weapon Level:':<20}` `{player.town_hall_weapon:<20}`\n'
@@ -53,6 +53,47 @@ class ClashOfClansCog(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command(name='clan_members')
+    async def clan_members(self, ctx : commands.Context, clan_tag : str = "default") -> None:
+        # If no clan tag is provided, use the tag found in the .env file.
+        desired_clan_tag : str = self.bot.coc_clantag if clan_tag == "default" else clan_tag
+
+        # Make sure the clan's tag is valid.
+        if coc.utils.is_valid_tag(desired_clan_tag) == False:
+            embed = discord.Embed(colour=discord.Colour.red(),
+                                  title=f'Error',
+                                  description=f'Invalid clan tag format provided. `{desired_clan_tag}`')
+            await ctx.send(embed=embed)
+            return
+
+        # Attempt to get the clan.
+        try:
+            clan : coc.Clan = await self.bot.coc_client.get_clan(desired_clan_tag)
+        except coc.NotFound:
+            embed = discord.Embed(colour=discord.Colour.red(),
+                                  title=f'Error',
+                                  description=f'Unable to get the desired clan with tag `{desired_clan_tag}`.')
+            await ctx.send(embed=embed)
+            return
+        except coc.GatewayError:
+            embed = discord.Embed(colour=discord.Colour.red(),
+                                  title=f'Error',
+                                  description=f'Unexpected gateway error.')
+            await ctx.send(embed=embed)
+            return
+
+        frame : str = f'{clan.name} ({clan.tag}) [{clan.member_count}/50 members]\n\n'
+        number : int = 1
+
+        for member in clan.members:
+            frame += (f'`{f'{number}. {member.name}':<20}` 'f'`{member.tag:<15}`\n')
+            number = number + 1
+
+        embed = discord.Embed(colour=discord.Colour.yellow(), title='Clan Members', description=frame)
+        embed.set_thumbnail(url=clan.badge.url)
+
+        await ctx.send(embed=embed)
+
     @commands.command(name='clan_info')
     async def clan_info(self, ctx : commands.Context, clan_tag : str = "default") -> None:
         # If no clan tag is provided, use the tag found in the .env file.
@@ -75,17 +116,15 @@ class ClashOfClansCog(commands.Cog):
                                   description=f'Unable to get the desired clan with tag `{desired_clan_tag}`.')
             await ctx.send(embed=embed)
             return
-        
-        log : str = 'Private' if clan.public_war_log == False else 'Public'
 
         embed = discord.Embed(colour=discord.Colour.yellow(), title='Clan Info')
         embed.set_thumbnail(url=clan.badge.url)
 
-        embed.add_field(name='Clan Name',
-                    value=f'{clan.name}({clan.tag})\n[Open in game]({clan.share_link})',
+        embed.add_field(name='Name',
+                    value=f'{clan.name} ({clan.tag})\n[Open in game]({clan.share_link})',
                     inline=False)
 
-        embed.add_field(name='Clan Level',
+        embed.add_field(name='Level',
                     value=clan.level,
                     inline=False)
 
@@ -115,12 +154,20 @@ class ClashOfClansCog(commands.Cog):
                     value=clan.builder_base_points,
                     inline=False)
 
-        embed.add_field(name='WarLog Type',
-                    value=log,
+        embed.add_field(name='War Log',
+                    value='Private' if clan.public_war_log == False else 'Public',
                     inline=False)
 
         embed.add_field(name='Required Trophies',
                     value=clan.required_trophies,
+                    inline=False)
+        
+        embed.add_field(name='Required Builder Base Trophies',
+                    value=clan.required_builder_base_trophies,
+                    inline=False)
+        
+        embed.add_field(name='Required Townhall',
+                    value=clan.required_townhall,
                     inline=False)
 
         embed.add_field(name='War Win Streak',
@@ -150,24 +197,27 @@ class ClashOfClansCog(commands.Cog):
             inline=False
         )
 
-        frame = ''
-        for district in clan.capital_districts:
-            frame += (f'`{f'{district.name}:':<20}` '
-                      f'`{district.hall_level:<15}`\n')
+        # If the the clan has districts info, add it to the embed.
+        if len(clan.capital_districts) > 0:
+            frame : str = ''
 
-        embed2 = discord.Embed(colour=discord.Colour.yellow(),
-                               description=frame,
-                               title='Capital Districts')
+            for district in clan.capital_districts:
+                frame += (f'`{f'{district.name}:':<20}` 'f'`{district.hall_level:<15}`\n')
 
-        await ctx.send(embeds=[embed, embed2])
+            embed.add_field(name='Capital District',
+                            value=frame,
+                            inline=False)
+
+        await ctx.send(embed=embed)
 
     @player_info.error
     @clan_info.error
+    @clan_members.error
     async def handle_error(self, ctx : commands.Context, error):
         if isinstance(error, commands.MissingRequiredArgument):
             message = f'Missing required argument for this command.\n`{error.param}`'
         else:
-            message = 'Something went wrong...'
+            message = f'{error}'
 
         embed = discord.Embed(colour=discord.Colour.red(),
                               title='Error',
