@@ -70,7 +70,7 @@ async def main() -> None:
 
     coc_email: str = os.getenv('COC_EMAIL')
     coc_password: str = os.getenv('COC_PASSWORD')
-    coc_clantag: str = os.getenv('COC_CLANTAG')
+    coc_clantag: str = os.getenv('COC_CLAN_TAG')
 
     async with coc.EventsClient() as coc_client:
         # Attempt to log into the CoC API.

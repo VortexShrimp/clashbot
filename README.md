@@ -21,13 +21,14 @@ DISCORD_TOKEN = "App token"
 
 # Discord webhook for clan events.
 DISCORD_CLAN_WEBHOOK = "Webhook URL"
+DISCORD_WAR_WEBHOOK = "Webhook URL"
 
 # Clash of Clans API.
 COC_EMAIL = "Your email"
 COC_PASSWORD = "Your password"
 
 # The tag of the clan that you want to track.
-COC_CLANTAG = "Your tag"
+COC_CLAN_TAG = "Your tag"
 ```
 
 ## Example

@@ -107,12 +107,49 @@ async def on_clan_badge_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
 
 @coc.WarEvents.new_war()
 async def on_new_war(new_war: coc.ClanWar) -> None:
-    ...
+    webhook_url: str = os.getenv('DISCORD_WAR_WEBHOOK')
+    if webhook_url is None:
+        return
+    
+    embed = discord.Embed(colour=discord.Colour.yellow(),
+                          title='New War',
+                          # TODO: Neaten this up...
+                          description=f'A new `{new_war.team_size}vs{new_war.team_size}` war has started against `{new_war.opponent.name} ({new_war.opponent.tag}) level {new_war.opponent.level}`.')
+    embed.set_thumbnail(url=new_war.clan.badge.url)
+
+    await send_embed_via_webhook(webhook_url, embed)
 
 @coc.WarEvents.war_attack()
 async def on_war_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None:
-    ...
+    webhook_url: str = os.getenv('DISCORD_WAR_WEBHOOK')
+    if webhook_url is None:
+        return
+    
+    home_clan_tag: str = os.getenv('COC_CLAN_TAG')
+    if home_clan_tag is None:
+        return
+    
+    # If the attacker is in our clan make the color green.
+    colour = discord.Colour.green() if attack.attacker.clan.tag == home_clan_tag else discord.Colour.red()
+    
+    frame: str = f'`{attack.attacker.name}` attacked `{attack.defender.name}` and got {attack.stars} stars with {attack.destruction}%.'
+
+    embed = discord.Embed(colour=colour,
+                          title='War Attack',
+                          description=frame)
+    embed.set_thumbnail(url=attack.attacker.clan.badge.url)
+
+    await send_embed_via_webhook(webhook_url, embed)
 
 @coc.WarEvents.state()
 async def on_war_state_changed(old_war: coc.ClanWar, new_war: coc.ClanWar) -> None:
-    ...
+    webhook_url: str = os.getenv('DISCORD_WAR_WEBHOOK')
+    if webhook_url is None:
+        return
+    
+    embed = discord.Embed(colour=discord.Colour.dark_grey(),
+                          title='War State Update',
+                          description=f'Clan war state has changed from {old_war.state} to {new_war.state}')
+    embed.set_thumbnail(url=new_war.clan.badge.url)
+
+    await send_embed_via_webhook(webhook_url, embed)
