@@ -36,11 +36,14 @@ class ModeratorCog(commands.Cog):
             await response.delete(delay=3)
             return
         
-        await ctx.channel.purge(limit=amount)
-
-        # Send a confirmation and delete it after a small delay.
-        confirmation: discord.Message = await ctx.send(f"Deleted {amount} messages.")
-        await confirmation.delete(delay=3)
+        if isinstance(ctx.channel, discord.TextChannel):
+            await ctx.channel.purge(limit=amount)
+            # Send a confirmation and delete it after a small delay.
+            confirmation: discord.Message = await ctx.send(f"Deleted {amount} messages.")
+            await confirmation.delete(delay=3)
+        else:
+            response: discord.Message = await ctx.reply("This command can only be used in server text channels.")
+            await response.delete(delay=3)
 
     @kick.error
     @ban.error

@@ -31,15 +31,16 @@ class ClashOfClansCog(commands.Cog):
         if player.town_hall > 11:
             frame += f'`{'TH Weapon Level:':<20}` `{player.town_hall_weapon:<20}`\n'
 
-        role = player.role if player.role else 'None'
-        clan = player.clan.name if player.clan else 'None'
+        role: str = str(player.role) if player.role else 'None'
+        clan : str = player.clan.name if player.clan else 'None'
+        league : str = player.league.name if player.league else 'None'
 
         frame += (
             f'`{'Name:':<20}` `{player.name:<20}`\n'
             f'`{'Role:':<20}` `{role:<20}`\n'
             f'`{'Player Tag:':<20}` `{player.tag:<20}`\n'
             f'`{'Current Clan:':<20}` `{clan:<20.20}`\n'
-            f'`{'League:':<20}` `{player.league.name:<20.20}`\n'
+            f'`{'League:':<20}` `{league:<20.20}`\n'
             f'`{'Trophies:':<20}` `{player.trophies:<20}`\n'
             f'`{'Best Trophies:':<20}` `{player.best_trophies:<20}`\n'
             f'`{'War Stars:':<20}` `{player.war_stars:<20}`\n'
@@ -90,7 +91,8 @@ class ClashOfClansCog(commands.Cog):
             number = number + 1
 
         embed = discord.Embed(colour=discord.Colour.yellow(), title='Clan Members', description=frame)
-        embed.set_thumbnail(url=clan.badge.url)
+        if clan.badge is not None and hasattr(clan.badge, "url"):
+            embed.set_thumbnail(url=clan.badge.url)
 
         await ctx.send(embed=embed)
 
@@ -118,7 +120,8 @@ class ClashOfClansCog(commands.Cog):
             return
 
         embed = discord.Embed(colour=discord.Colour.yellow(), title='Clan Info')
-        embed.set_thumbnail(url=clan.badge.url)
+        if clan.badge is not None and hasattr(clan.badge, "url"):
+            embed.set_thumbnail(url=clan.badge.url)
 
         embed.add_field(name='Name',
                     value=f'{clan.name} ({clan.tag})\n[Open in game]({clan.share_link})',
@@ -132,11 +135,10 @@ class ClashOfClansCog(commands.Cog):
                     value=clan.description,
                     inline=False)
 
-        leader: coc.ClanMember = clan.get_member_by(role=coc.Role.leader)
-
+        leader: coc.ClanMember | None = clan.get_member_by(role=coc.Role.leader)
         embed.add_field(name='Leader',
-                    value=f'{leader.name} ({leader.tag})',
-                    inline=False)
+                    value=f'{leader.name} ({leader.tag})' if leader else 'None',
+                    inline=False)     
 
         embed.add_field(name='Clan Type',
                     value=clan.type,
@@ -224,5 +226,5 @@ class ClashOfClansCog(commands.Cog):
                               description=message)
         await ctx.send(embed=embed)
 
-async def setup(bot: commands.Bot):
+async def setup(bot: SkebengaBot):
     await bot.add_cog(ClashOfClansCog(bot))
