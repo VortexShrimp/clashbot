@@ -67,41 +67,51 @@ class ClashBot(commands.Bot):
         )
 
 async def main() -> None:
-    discord_token: str = os.getenv('DISCORD_TOKEN') or ""
+    discord_token: str | None = os.getenv('DISCORD_TOKEN') or None
     if not discord_token:
         print('[error] DISCORD_TOKEN not found in .env file.')
         return
 
-    coc_email: str = os.getenv('COC_EMAIL') or ""
+    coc_email: str | None = os.getenv('COC_EMAIL') or None
     if not coc_email:
         print('[error] COC_EMAIL not found in .env file.')
         return
 
-    coc_password: str = os.getenv('COC_PASSWORD') or ""
+    coc_password: str | None = os.getenv('COC_PASSWORD') or None
     if not coc_password:
         print('[error] COC_PASSWORD not found in .env file.')
         return
-    
-    coc_clantag: str = os.getenv('COC_CLAN_TAG') or ""
+
+    coc_clantag: str | None = os.getenv('COC_CLAN_TAG') or None
     if not coc_clantag:
         print('[error] COC_CLAN_TAG not found in .env file.')
         return
+    
+    # Test that everything else required by the bot is present.
+    if os.getenv('DISCORD_CLAN_WEBHOOK') is None:
+        print('[error] DISCORD_CLAN_WEBHOOK not found in .env file. Clan events will not be sent to Discord.')
+
+    if os.getenv('DISCORD_WAR_WEBHOOK') is None:
+        print('[error] DISCORD_WAR_WEBHOOK not found in .env file. War events will not be sent to Discord.')
+
+    if os.getenv('DISCORD_DONATIONS_WEBHOOK') is None:
+        print('[error] DISCORD_DONATIONS_WEBHOOK not found in .env file. Donations will not be sent to Discord.')
 
     async with coc.EventsClient() as coc_client:
         # Attempt to log into the CoC API.
         try:
             await coc_client.login(coc_email, coc_password)
         except coc.InvalidCredentials as error:
-            print(f'[error] Failed to login to CoC API.')
+            print(f'[error] Failed to login to CoC API. Error: {error}')
             return
 
-        # Run the discord bot.
         bot = ClashBot(coc_client, coc_clantag)
+
+        # Run the bot.
         await bot.start(discord_token)
 
 if __name__ == '__main__':
     # Search for a .env file in the current directory.
-    # Print an error if it does not exist.
     if dotenv.load_dotenv() == True:
         loop = asyncio.new_event_loop()
 
@@ -110,5 +120,26 @@ if __name__ == '__main__':
             loop.run_forever()
         except KeyboardInterrupt:
             ...
+    # If the .env file does not exist, create one.
     else:
-        print('[error] Failed to load ".env" file. Please ensure it exists and is formatted correctly.')
+        print('[error] Failed to load ".env" file. Creating one for you.')
+
+        with open('.env', 'w') as env_file:
+            env_file.write(
+                '# Standard Discord bot application token.\n'
+                'DISCORD_TOKEN=\n'
+
+                '# Webhook URLs for sending clan, war and donation events.\n'
+                'DISCORD_CLAN_WEBHOOK=\n'
+                'DISCORD_WAR_WEBHOOK=\n'
+                'DISCORD_DONATIONS_WEBHOOK=\n'
+
+                '# Clash of Clans API credentials.\n'
+                'COC_EMAIL=\n'
+                'COC_PASSWORD=\n'
+
+                '# The tag of the clan to track.\n'
+                'COC_CLAN_TAG=\n'
+            )
+
+        print('[error] Please fill in the .env file with your data and try again.')
