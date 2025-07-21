@@ -3,6 +3,13 @@ import os
 import aiohttp
 import discord
 
+# INFO: This file contains event listeners for the Clash of Clans events.
+# TODO: Right now, each function searches for the webhook URL in the environment variables, everytime it is called.
+#       This is not efficient, so we should probably load it once and pass it to the functions.
+#
+#       Also, currently the member donations event only sends a message if the member has donated troops.
+#       It also does 
+
 # Helper function to send a webhook.
 async def send_embed_via_webhook(webhook_url: str, embed: discord.Embed) -> None:
     async with aiohttp.ClientSession() as session:
@@ -138,12 +145,14 @@ async def on_clan_badge_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
 async def on_member_donations(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
     print('[debug] on_member_donations called')
 
-    webhook_url: str | None = os.getenv('DISCORD_CLAN_WEBHOOK')
+    webhook_url: str | None = os.getenv('DISCORD_DONATIONS_WEBHOOK')
     if webhook_url is None:
         return
 
+    # Positive if the member has donated troops, negative if they have received troops.
+    # TODO: Test this theory...
     donation_count: int = new_member.donations - old_member.donations
-    if donation_count <= 0:
+    if donation_count == 0:
         return
     
     embed = discord.Embed(colour=discord.Colour.green(),

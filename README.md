@@ -16,18 +16,23 @@ This project uses `poetry` to easily manage its dependencies and environment.
 Sensitive data is stored in a `.env` file in the project's root.
 
 ```dotenv
-# Discord API.
+# Standard Discord bot application token.
+# Find this in the Discord Developer portal after creating your bot.
 DISCORD_TOKEN = "App token"
 
-# Discord webhook for clan events.
+# For listening to clan events and posting them, this bot uses webhooks.
+# Create a text channel in your server, then go to 'integrations' and add a webhook.
+# If you want all the events in the same channel, use the same URL for each token.
 DISCORD_CLAN_WEBHOOK = "Webhook URL"
 DISCORD_WAR_WEBHOOK = "Webhook URL"
+DISCORD_DONATIONS_WEBHOOK = "Webhook URL"
 
-# Clash of Clans API.
+# Clash of Clans information.
+# You will need a free account on their developer portal.
 COC_EMAIL = "Your email"
 COC_PASSWORD = "Your password"
 
-# The tag of the clan that you want to track.
+# Your main clan that you want to track events for.
 COC_CLAN_TAG = "Your tag"
 ```
 
