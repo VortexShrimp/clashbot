@@ -46,10 +46,9 @@ class SkebengaBot(commands.Bot):
         try:
             clan: coc.Clan = await self.coc_client.get_clan(self.coc_clantag)
             print(f'Tracking {clan.name} with tag {clan.tag}')
+            self.coc_client.add_player_updates(*[member.tag for member in clan.members])
         except coc.ClashOfClansException:
             print(f'[error] Failed to start tracking {self.coc_clantag}')
-
-        self.coc_client.add_player_updates(*[member.tag for member in clan.members])
 
         # Add our custom event listeners.
         self.coc_client.add_events(
@@ -65,12 +64,25 @@ class SkebengaBot(commands.Bot):
         )
 
 async def main() -> None:
-    # Get our tokens from the .env file.
-    discord_token: str = os.getenv('DISCORD_TOKEN')
+    discord_token: str = os.getenv('DISCORD_TOKEN') or ""
+    if not discord_token:
+        print('[error] DISCORD_TOKEN not found in .env file.')
+        return
 
-    coc_email: str = os.getenv('COC_EMAIL')
-    coc_password: str = os.getenv('COC_PASSWORD')
-    coc_clantag: str = os.getenv('COC_CLAN_TAG')
+    coc_email: str = os.getenv('COC_EMAIL') or ""
+    if not coc_email:
+        print('[error] COC_EMAIL not found in .env file.')
+        return
+
+    coc_password: str = os.getenv('COC_PASSWORD') or ""
+    if not coc_password:
+        print('[error] COC_PASSWORD not found in .env file.')
+        return
+    
+    coc_clantag: str = os.getenv('COC_CLAN_TAG') or ""
+    if not coc_clantag:
+        print('[error] COC_CLAN_TAG not found in .env file.')
+        return
 
     async with coc.EventsClient() as coc_client:
         # Attempt to log into the CoC API.
@@ -78,13 +90,15 @@ async def main() -> None:
             await coc_client.login(coc_email, coc_password)
         except coc.InvalidCredentials as error:
             print(f'[error] Failed to login to CoC API.')
-            exit(error)
+            return
 
         # Run the discord bot.
         bot = SkebengaBot(coc_client, coc_clantag)
         await bot.start(discord_token)
 
 if __name__ == '__main__':
+    # Search for a .env file in the current directory.
+    # Print an error if it does not exist.
     if dotenv.load_dotenv() == True:
         loop = asyncio.new_event_loop()
 
@@ -94,4 +108,4 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             ...
     else:
-        print('[error] Failed to load ".env" file.')
+        print('[error] Failed to load ".env" file. Please ensure it exists and is formatted correctly.')
