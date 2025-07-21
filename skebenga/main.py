@@ -57,6 +57,7 @@ class SkebengaBot(commands.Bot):
             listeners.on_clan_level_changed,
             listeners.on_clan_description_changed,
             listeners.on_clan_badge_changed,
+            listeners.on_member_donations,
 
             listeners.on_new_war,
             listeners.on_war_attack,

@@ -11,15 +11,19 @@ async def send_embed_via_webhook(webhook_url: str, embed: discord.Embed) -> None
 
 @coc.ClanEvents.member_join()
 async def on_clan_member_join(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
+    print('[debug] on_clan_member_join called')
+
     webhook_url: str | None = os.getenv('DISCORD_CLAN_WEBHOOK')
     if webhook_url is None:
         return
-
+    
     embed = discord.Embed(colour=discord.Colour.green(),
                           title='Player Joined',
                           description=f'Player `{new_member.name} ({new_member.tag})` has joined the clan.')
-    if new_member.clan is not None and new_member.clan.badge is not None and hasattr(new_member.clan.badge, "url"):
-        embed.set_thumbnail(url=new_member.clan.badge.url)
+    
+    clan_badge: coc.Badge | None = new_member.clan.badge if new_member.clan else None
+    if clan_badge is not None and hasattr(clan_badge, "url"):
+        embed.set_thumbnail(url=clan_badge.url)
 
     frame += (
         f'`{'League:':<20}` `{new_member.league.name:<20.20}`\n'
@@ -39,6 +43,8 @@ async def on_clan_member_join(old_member: coc.ClanMember, new_member: coc.ClanMe
 
 @coc.ClanEvents.member_leave()
 async def on_clan_member_leave(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
+    print('[debug] on_clan_member_leave called')
+
     webhook_url: str | None = os.getenv('DISCORD_CLAN_WEBHOOK')
     if webhook_url is None:
         return
@@ -46,13 +52,18 @@ async def on_clan_member_leave(old_member: coc.ClanMember, new_member: coc.ClanM
     embed = discord.Embed(colour=discord.Colour.red(),
                           title='Player Left',
                           description=f'Player `{new_member.name} ({new_member.tag})` has left the clan.')
-    if old_member.clan is not None and old_member.clan.badge is not None and hasattr(old_member.clan.badge, "url"):
-        embed.set_thumbnail(url=old_member.clan.badge.url)
+
+    # Need to get the old member's clan badge because they just left.
+    clan_badge: coc.Badge | None = old_member.clan.badge if old_member.clan else None
+    if clan_badge is not None and hasattr(clan_badge, "url"):
+        embed.set_thumbnail(url=clan_badge.url)
 
     await send_embed_via_webhook(webhook_url, embed)
 
 @coc.ClanEvents.level()
 async def on_clan_level_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
+    print('[debug] on_clan_level_changed called')
+
     webhook_url: str | None= os.getenv('DISCORD_CLAN_WEBHOOK')
     if webhook_url is None:
         return
@@ -63,22 +74,27 @@ async def on_clan_level_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
     embed = discord.Embed(colour=discord.Colour.yellow(),
                           title='Level Up',
                           description=f'The clan has leveled up from {old_clan.level} to {new_clan.level}.')
+    
     if new_clan.badge is not None and hasattr(new_clan.badge, "url"):
         embed.set_thumbnail(url=new_clan.badge.url)
-    
+
     await send_embed_via_webhook(webhook_url, embed)
 
 @coc.ClanEvents.description()
 async def on_clan_description_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
+    print('[debug] on_clan_description_changed called')
+
     webhook_url: str | None = os.getenv('DISCORD_CLAN_WEBHOOK')
     if webhook_url is None:
         return
     
+    # Nothing changed.
     if old_clan.description == new_clan.description:
         return
     
     embed = discord.Embed(colour=discord.Colour.yellow(),
                           title='Description Update')
+    
     if new_clan.badge is not None and hasattr(new_clan.badge, "url"):
         embed.set_thumbnail(url=new_clan.badge.url)
 
@@ -94,24 +110,56 @@ async def on_clan_description_changed(old_clan: coc.Clan, new_clan: coc.Clan) ->
 
 @coc.ClanEvents.badge()
 async def on_clan_badge_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
+    print('[debug] on_clan_badge_changed called')
+
     webhook_url: str | None = os.getenv('DISCORD_CLAN_WEBHOOK')
     if webhook_url is None:
         return
     
-    # Don't send the event if nothing has changed.
-    if old_clan.badge is not None and new_clan.badge is not None and old_clan.badge.url == new_clan.badge.url:
+    new_badge: coc.Badge | None = new_clan.badge
+    old_badge: coc.Badge | None = old_clan.badge
+
+    if new_badge is None or old_badge is None:
+        return
+    
+    # If the badge URL hasn't changed, don't send the event.
+    if new_badge.url == old_badge.url:
         return
 
     embed = discord.Embed(colour=discord.Colour.yellow(),
                           title='Badge Update',
                           description='The clan\'s badge has been updated.')
-    if new_clan.badge is not None and hasattr(new_clan.badge, "url"):
-        embed.set_thumbnail(url=new_clan.badge.url)
+
+    embed.set_thumbnail(url=new_badge.url)
+
+    await send_embed_via_webhook(webhook_url, embed)
+
+@coc.ClanEvents.member_donations()
+async def on_member_donations(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
+    print('[debug] on_member_donations called')
+
+    webhook_url: str | None = os.getenv('DISCORD_CLAN_WEBHOOK')
+    if webhook_url is None:
+        return
+
+    donation_count: int = new_member.donations - old_member.donations
+    if donation_count <= 0:
+        return
+    
+    embed = discord.Embed(colour=discord.Colour.green(),
+                          title='Donations',
+                          description=f'{new_member.name} `{new_member.tag}` has donated: {donation_count} troops.')
+    
+    clan_badge: coc.Badge | None = new_member.clan.badge if new_member.clan else None
+    if clan_badge is not None and hasattr(clan_badge, "url"):
+        embed.set_thumbnail(url=clan_badge.url)
 
     await send_embed_via_webhook(webhook_url, embed)
 
 @coc.WarEvents.new_war()
 async def on_new_war(new_war: coc.ClanWar) -> None:
+    print('[debug] on_new_war called')
+
     webhook_url: str | None = os.getenv('DISCORD_WAR_WEBHOOK')
     if webhook_url is None:
         return
@@ -120,13 +168,17 @@ async def on_new_war(new_war: coc.ClanWar) -> None:
                           title='New War',
                           # TODO: Neaten this up...
                           description=f'A new `{new_war.team_size}vs{new_war.team_size}` war has started against `{new_war.opponent.name} ({new_war.opponent.tag}) level {new_war.opponent.level}`.')
-    if new_war.clan is not None and new_war.clan.badge is not None and hasattr(new_war.clan.badge, "url"):
-        embed.set_thumbnail(url=new_war.clan.badge.url)
+
+    clan_badge: coc.Badge | None = new_war.clan.badge if new_war.clan else None
+    if clan_badge is not None and hasattr(clan_badge, "url"):
+        embed.set_thumbnail(url=clan_badge.url)
 
     await send_embed_via_webhook(webhook_url, embed)
 
 @coc.WarEvents.war_attack()
 async def on_war_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None:
+    print('[debug] on_war_attack called')
+
     webhook_url: str | None = os.getenv('DISCORD_WAR_WEBHOOK')
     if webhook_url is None:
         return
@@ -143,13 +195,17 @@ async def on_war_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None
     embed = discord.Embed(colour=colour,
                           title='War Attack',
                           description=frame)
-    if attack.attacker.clan is not None and attack.attacker.clan.badge is not None and hasattr(attack.attacker.clan.badge, "url"):
-        embed.set_thumbnail(url=attack.attacker.clan.badge.url)
+
+    clan_badge: coc.Badge | None = attack.attacker.clan.badge if attack.attacker.clan else None
+    if clan_badge is not None and hasattr(clan_badge, "url"):
+        embed.set_thumbnail(url=clan_badge.url)
 
     await send_embed_via_webhook(webhook_url, embed)
 
 @coc.WarEvents.state()
 async def on_war_state_changed(old_war: coc.ClanWar, new_war: coc.ClanWar) -> None:
+    print('[debug] on_war_state_changed called')
+
     webhook_url: str | None = os.getenv('DISCORD_WAR_WEBHOOK')
     if webhook_url is None:
         return
@@ -157,7 +213,9 @@ async def on_war_state_changed(old_war: coc.ClanWar, new_war: coc.ClanWar) -> No
     embed = discord.Embed(colour=discord.Colour.dark_grey(),
                           title='War State Update',
                           description=f'Clan war state has changed from {old_war.state} to {new_war.state}')
-    if new_war.clan is not None and new_war.clan.badge is not None and hasattr(new_war.clan.badge, "url"):
-        embed.set_thumbnail(url=new_war.clan.badge.url)
+    
+    clan_badge: coc.Badge | None = new_war.clan.badge if new_war.clan else None
+    if clan_badge is not None and hasattr(clan_badge, "url"):
+        embed.set_thumbnail(url=clan_badge.url)
 
     await send_embed_via_webhook(webhook_url, embed)
