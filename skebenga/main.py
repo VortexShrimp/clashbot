@@ -67,27 +67,28 @@ class ClashBot(commands.Bot):
         )
 
 async def main() -> None:
-    discord_token: str | None = os.getenv('DISCORD_TOKEN') or None
-    if not discord_token:
+    discord_token: str | None = os.getenv('DISCORD_TOKEN')
+    if discord_token is None:
         print('[error] DISCORD_TOKEN not found in .env file.')
         return
 
-    coc_email: str | None = os.getenv('COC_EMAIL') or None
-    if not coc_email:
+    coc_email: str | None = os.getenv('COC_EMAIL')
+    if coc_email is None:
         print('[error] COC_EMAIL not found in .env file.')
         return
 
-    coc_password: str | None = os.getenv('COC_PASSWORD') or None
-    if not coc_password:
+    coc_password: str | None = os.getenv('COC_PASSWORD')
+    if coc_password is None:
         print('[error] COC_PASSWORD not found in .env file.')
         return
 
-    coc_clantag: str | None = os.getenv('COC_CLAN_TAG') or None
-    if not coc_clantag:
+    coc_clantag: str | None = os.getenv('COC_CLAN_TAG')
+    if coc_clantag is None:
         print('[error] COC_CLAN_TAG not found in .env file.')
         return
     
     # Test that everything else required by the bot is present.
+    
     if os.getenv('DISCORD_CLAN_WEBHOOK') is None:
         print('[error] DISCORD_CLAN_WEBHOOK not found in .env file. Clan events will not be sent to Discord.')
 
