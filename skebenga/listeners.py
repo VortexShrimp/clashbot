@@ -4,11 +4,15 @@ import aiohttp
 import discord
 
 # INFO: This file contains event listeners for the Clash of Clans events.
-# TODO: Right now, each function searches for the webhook URL in the environment variables, everytime it is called.
+#
+# TODO: Split this up into multiple files. For example, one for clan events, one for war events, etc.
+# 
+#       Right now, each function searches for the webhook URL in the environment variables, everytime it is called.
 #       This is not efficient, so we should probably load it once and pass it to the functions.
 #
-#       Also, currently the member donations event only sends a message if the member has donated troops.
-#       It also does 
+#       Also, currently the member donations event only sends a message if the member has donated troops or received troops.
+#       There is no info about who sent/received the troops in the events, so we cannot send that information.
+#       In terms of a solution, I think a global queue could be used to store the donations and then send them in batch.
 
 # Helper function to send a webhook.
 async def send_embed_via_webhook(webhook_url: str, embed: discord.Embed) -> None:
@@ -142,23 +146,43 @@ async def on_clan_badge_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
     await send_embed_via_webhook(webhook_url, embed)
 
 @coc.ClanEvents.member_donations()
-async def on_member_donations(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
-    print('[debug] on_member_donations called')
+async def on_member_donations_sent(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
+    print('[debug] on_member_donations_sent called')
 
     webhook_url: str | None = os.getenv('DISCORD_DONATIONS_WEBHOOK')
     if webhook_url is None:
         return
 
-    # Positive if the member has donated troops, negative if they have received troops.
-    # TODO: Test this theory...
     donation_count: int = new_member.donations - old_member.donations
     if donation_count == 0:
         return
     
     embed = discord.Embed(colour=discord.Colour.green(),
-                          title='Donations',
+                          title='Donations Sent',
                           description=f'{new_member.name} `{new_member.tag}` has donated: {donation_count} troops.')
     
+    clan_badge: coc.Badge | None = new_member.clan.badge if new_member.clan else None
+    if clan_badge is not None and hasattr(clan_badge, "url"):
+        embed.set_thumbnail(url=clan_badge.url)
+
+    await send_embed_via_webhook(webhook_url, embed)
+
+@coc.ClanEvents.member_received()
+async def on_member_donations_received(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
+    print('[debug] on_member_donations_received called')
+
+    webhook_url: str | None = os.getenv('DISCORD_DONATIONS_WEBHOOK')
+    if webhook_url is None:
+        return
+
+    received_count: int = new_member.received - old_member.received
+    if received_count == 0:
+        return
+
+    embed = discord.Embed(colour=discord.Colour.red(),
+                          title='Donations Received',
+                          description=f'{new_member.name} `{new_member.tag}` has received: {received_count} troops.')
+
     clan_badge: coc.Badge | None = new_member.clan.badge if new_member.clan else None
     if clan_badge is not None and hasattr(clan_badge, "url"):
         embed.set_thumbnail(url=clan_badge.url)

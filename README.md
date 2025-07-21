@@ -1,6 +1,14 @@
 # Skebenga
 
-A bot for tracking Clash of Clans activity on a discord server.
+A bot for tracking Clash of Clans activity over Discord.
+
+## Features
+
+- Tracks clan events such as member joins & leaves, description & badge changes and more.
+- Track war events such as preparation starts, wins & losses.
+- Tracks clan member donations and their amounts.
+- Useful commands fo getting info about other clans & players with `!clan_info` and `!player_info`
+- A few moderation commands, like `!kick`, `!ban` and more.
 
 ## Requirements
 
@@ -13,7 +21,7 @@ This project uses `poetry` to easily manage its dependencies and environment.
 - Install [poetry](https://python-poetry.org/).
   - `$ pipx install poetry`
 
-Sensitive data is stored in a `.env` file in the project's root.
+Sensitive data, such as API tokens and webhook urls, is stored in a `.env` file in the project's root directory.
 
 ```dotenv
 # Standard Discord bot application token.
@@ -36,11 +44,11 @@ COC_PASSWORD = "Your password"
 COC_CLAN_TAG = "Your tag"
 ```
 
-## Example
+## Usage Example
 
 1. Clone this repo through `git` or download it directly.
    - `$ git clone https://github.com/VortexShrimp/skebenga.git`
-2. Create a `.env` file in the root of the project and fill in your data..
+2. Create a `.env` file in the root of the project and add your sensitive data.
 3. Install the dependencies. See the requirements above.
    - `$ poetry install`
 4. Run the bot.

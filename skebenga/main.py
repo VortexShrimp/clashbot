@@ -8,8 +8,7 @@ import os
 import dotenv
 import asyncio
 
-# The main bot class.
-class SkebengaBot(commands.Bot):
+class ClashBot(commands.Bot):
     def __init__(self, coc_client: coc.EventsClient, coc_clantag: str) -> None:
         self.coc_client: coc.EventsClient = coc_client
         self.coc_clantag: str = coc_clantag
@@ -52,13 +51,16 @@ class SkebengaBot(commands.Bot):
 
         # Add our custom event listeners.
         self.coc_client.add_events(
+            # Clan Events
             listeners.on_clan_member_join,
             listeners.on_clan_member_leave,
             listeners.on_clan_level_changed,
             listeners.on_clan_description_changed,
             listeners.on_clan_badge_changed,
-            listeners.on_member_donations,
+            listeners.on_member_donations_sent,
+            listeners.on_member_donations_received,
 
+            # War Events
             listeners.on_new_war,
             listeners.on_war_attack,
             listeners.on_war_state_changed
@@ -94,7 +96,7 @@ async def main() -> None:
             return
 
         # Run the discord bot.
-        bot = SkebengaBot(coc_client, coc_clantag)
+        bot = ClashBot(coc_client, coc_clantag)
         await bot.start(discord_token)
 
 if __name__ == '__main__':

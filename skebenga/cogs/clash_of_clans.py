@@ -3,11 +3,11 @@ from discord.ext import commands
 
 import coc
 
-from main import SkebengaBot
+from main import ClashBot
 
 class ClashOfClansCog(commands.Cog):
-    def __init__(self, bot: SkebengaBot) -> None:
-        self.bot: SkebengaBot = bot
+    def __init__(self, bot: ClashBot) -> None:
+        self.bot: ClashBot = bot
 
     @commands.command(name='player_info')
     async def player_info(self, ctx: commands.Context, player_tag: str) -> None:
@@ -226,5 +226,5 @@ class ClashOfClansCog(commands.Cog):
                               description=message)
         await ctx.send(embed=embed)
 
-async def setup(bot: SkebengaBot):
+async def setup(bot: ClashBot):
     await bot.add_cog(ClashOfClansCog(bot))
