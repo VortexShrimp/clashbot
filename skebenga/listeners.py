@@ -43,7 +43,7 @@ async def on_clan_member_join(old_member: coc.ClanMember, new_member: coc.ClanMe
                     value=frame,
                     inline=False)
 
-    await send_embed_via_webhook(bot_globals.BOT_DISCORD_CLAN_WEBHOOK, embed)
+    await send_embed_via_webhook(bot_globals.DISCORD_CLAN_WEBHOOK, embed)
 
 @coc.ClanEvents.member_leave()
 async def on_clan_member_leave(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
@@ -58,7 +58,7 @@ async def on_clan_member_leave(old_member: coc.ClanMember, new_member: coc.ClanM
     if clan_badge is not None and hasattr(clan_badge, "url"):
         embed.set_thumbnail(url=clan_badge.url)
 
-    await send_embed_via_webhook(bot_globals.BOT_DISCORD_CLAN_WEBHOOK, embed)
+    await send_embed_via_webhook(bot_globals.DISCORD_CLAN_WEBHOOK, embed)
 
 @coc.ClanEvents.level()
 async def on_clan_level_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
@@ -74,7 +74,7 @@ async def on_clan_level_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
     if new_clan.badge is not None and hasattr(new_clan.badge, "url"):
         embed.set_thumbnail(url=new_clan.badge.url)
 
-    await send_embed_via_webhook(bot_globals.BOT_DISCORD_CLAN_WEBHOOK, embed)
+    await send_embed_via_webhook(bot_globals.DISCORD_CLAN_WEBHOOK, embed)
 
 @coc.ClanEvents.description()
 async def on_clan_description_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
@@ -98,7 +98,7 @@ async def on_clan_description_changed(old_clan: coc.Clan, new_clan: coc.Clan) ->
                     value=new_clan.description,
                     inline=False)
     
-    await send_embed_via_webhook(bot_globals.BOT_DISCORD_CLAN_WEBHOOK, embed)
+    await send_embed_via_webhook(bot_globals.DISCORD_CLAN_WEBHOOK, embed)
 
 @coc.ClanEvents.badge()
 async def on_clan_badge_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
@@ -121,7 +121,7 @@ async def on_clan_badge_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
 
     embed.set_thumbnail(url=new_badge.url)
 
-    await send_embed_via_webhook(bot_globals.BOT_DISCORD_CLAN_WEBHOOK, embed)
+    await send_embed_via_webhook(bot_globals.DISCORD_CLAN_WEBHOOK, embed)
 
 @coc.ClanEvents.member_donations()
 async def on_member_donations_sent(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
@@ -139,7 +139,7 @@ async def on_member_donations_sent(old_member: coc.ClanMember, new_member: coc.C
     # if clan_badge is not None and hasattr(clan_badge, "url"):
     #     embed.set_thumbnail(url=clan_badge.url)
 
-    await send_embed_via_webhook(bot_globals.BOT_DISCORD_DONATIONS_WEBHOOK, embed)
+    await send_embed_via_webhook(bot_globals.DISCORD_DONATIONS_WEBHOOK, embed)
 
 @coc.ClanEvents.member_received()
 async def on_member_donations_received(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
@@ -158,7 +158,7 @@ async def on_member_donations_received(old_member: coc.ClanMember, new_member: c
     # if clan_badge is not None and hasattr(clan_badge, "url"):
     #     embed.set_thumbnail(url=clan_badge.url)
 
-    await send_embed_via_webhook(bot_globals.BOT_DISCORD_DONATIONS_WEBHOOK, embed)
+    await send_embed_via_webhook(bot_globals.DISCORD_DONATIONS_WEBHOOK, embed)
 
 @coc.WarEvents.new_war()
 async def on_new_war(new_war: coc.ClanWar) -> None:
@@ -173,7 +173,7 @@ async def on_new_war(new_war: coc.ClanWar) -> None:
     if clan_badge is not None and hasattr(clan_badge, "url"):
         embed.set_thumbnail(url=clan_badge.url)
 
-    await send_embed_via_webhook(bot_globals.BOT_DISCORD_WAR_WEBHOOK, embed)
+    await send_embed_via_webhook(bot_globals.DISCORD_WAR_WEBHOOK, embed)
 
 @coc.WarEvents.war_attack()
 async def on_war_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None:
@@ -208,7 +208,7 @@ async def on_war_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None
     if clan_badge is not None and hasattr(clan_badge, "url"):
         embed.set_thumbnail(url=clan_badge.url)
 
-    await send_embed_via_webhook(bot_globals.BOT_DISCORD_WAR_WEBHOOK, embed)
+    await send_embed_via_webhook(bot_globals.DISCORD_WAR_WEBHOOK, embed)
 
 @coc.WarEvents.state()
 async def on_war_state_changed(old_war: coc.ClanWar, new_war: coc.ClanWar) -> None:
@@ -225,4 +225,4 @@ async def on_war_state_changed(old_war: coc.ClanWar, new_war: coc.ClanWar) -> No
     if clan_badge is not None and hasattr(clan_badge, "url"):
         embed.set_thumbnail(url=clan_badge.url)
 
-    await send_embed_via_webhook(bot_globals.BOT_DISCORD_WAR_WEBHOOK, embed)
+    await send_embed_via_webhook(bot_globals.DISCORD_WAR_WEBHOOK, embed)
