@@ -10,7 +10,7 @@ requires-python = ">=3.13"
 dependencies = [
     "discord-py (>=2.5.2,<3.0.0)",
     "coc-py (>=3.9.1,<4.0.0)",
-    "dotenv (>=0.9.9,<0.10.0)"
+    "python-dotenv (>=1.1.1,<2.0.0)",
 ]
 
 
