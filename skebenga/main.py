@@ -1,4 +1,5 @@
 import listeners
+from listeners import bot_globals
 
 import discord
 from discord.ext import commands
@@ -76,27 +77,35 @@ async def main() -> None:
     if coc_email is None:
         print('[error] COC_EMAIL not found in .env file.')
         return
-
+    
     coc_password: str | None = os.getenv('COC_PASSWORD')
     if coc_password is None:
         print('[error] COC_PASSWORD not found in .env file.')
         return
 
-    coc_clantag: str | None = os.getenv('COC_CLAN_TAG')
-    if coc_clantag is None:
+    bot_globals.BOT_COC_CLANTAG = os.getenv('COC_CLAN_TAG')
+    if bot_globals.BOT_COC_CLANTAG is None:
         print('[error] COC_CLAN_TAG not found in .env file.')
         return
     
-    # Test that everything else required by the bot is present.
-    
-    if os.getenv('DISCORD_CLAN_WEBHOOK') is None:
+    if not coc.utils.is_valid_tag(bot_globals.BOT_COC_CLANTAG):
+        print(f'[error] Invalid clan tag format provided: {bot_globals.BOT_COC_CLANTAG}')
+        return
+
+    bot_globals.BOT_DISCORD_CLAN_WEBHOOK = os.getenv('DISCORD_CLAN_WEBHOOK')
+    if bot_globals.BOT_DISCORD_CLAN_WEBHOOK is None:
         print('[error] DISCORD_CLAN_WEBHOOK not found in .env file. Clan events will not be sent to Discord.')
+        return
 
-    if os.getenv('DISCORD_WAR_WEBHOOK') is None:
+    bot_globals.BOT_DISCORD_WAR_WEBHOOK = os.getenv('DISCORD_WAR_WEBHOOK')
+    if bot_globals.BOT_DISCORD_WAR_WEBHOOK is None:
         print('[error] DISCORD_WAR_WEBHOOK not found in .env file. War events will not be sent to Discord.')
+        return
 
-    if os.getenv('DISCORD_DONATIONS_WEBHOOK') is None:
+    bot_globals.BOT_DISCORD_DONATIONS_WEBHOOK = os.getenv('DISCORD_DONATIONS_WEBHOOK')
+    if bot_globals.BOT_DISCORD_DONATIONS_WEBHOOK is None:
         print('[error] DISCORD_DONATIONS_WEBHOOK not found in .env file. Donations will not be sent to Discord.')
+        return
 
     async with coc.EventsClient() as coc_client:
         # Attempt to log into the CoC API.
@@ -106,7 +115,7 @@ async def main() -> None:
             print(f'[error] Failed to login to CoC API. Error: {error}')
             return
 
-        bot = ClashBot(coc_client, coc_clantag)
+        bot = ClashBot(coc_client, listeners.bot_globals.BOT_COC_CLANTAG)
 
         # Run the bot.
         await bot.start(discord_token)
