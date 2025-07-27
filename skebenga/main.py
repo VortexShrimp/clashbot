@@ -8,6 +8,7 @@ import asyncio
 
 import globals
 import listeners_clan
+import listeners_client
 import listeners_war
 
 class ClashBot(commands.Bot):
@@ -43,11 +44,13 @@ class ClashBot(commands.Bot):
         try:
             clan: coc.Clan = await self.coc_client.get_clan(self.coc_clantag)
             print(f'[info] Tracking {clan.name}{clan.tag} clan.')
+            
+            # Start tracking all members of the clan.
             self.coc_client.add_player_updates(*[member.tag for member in clan.members])
         except coc.ClashOfClansException:
             print(f'[error] Failed to start tracking {self.coc_clantag}')
 
-        # Add our custom event listeners.
+        # Register our custom event listeners.
         self.coc_client.add_events(
             # Clan Events
             listeners_clan.on_member_join,
@@ -58,6 +61,14 @@ class ClashBot(commands.Bot):
             listeners_clan.on_member_role,
             listeners_clan.on_member_donations_sent,
             listeners_clan.on_member_donations_received,
+
+            # Client Events
+            listeners_client.on_maintenance_start,
+            listeners_client.on_maintenance_completion,
+            listeners_client.on_clan_games_start,
+            listeners_client.on_clan_games_end,
+            listeners_client.on_raid_weekend_start,
+            listeners_client.on_raid_weekend_end,
 
             # War Events
             listeners_war.on_attack,
