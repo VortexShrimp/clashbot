@@ -7,7 +7,7 @@ A bot for tracking Clash of Clans activity over Discord.
 - Tracks clan events such as member joins & leaves, description & badge changes and more.
 - Track war events such as preparation starts, wins & losses.
 - Tracks clan member donations and their amounts.
-- Useful commands fo getting info about other clans & players with `!clan_info` and `!player_info`
+- Useful commands for getting info about other clans & players with `!clan_info` and `!player_info`
 - A few moderation commands, like `!kick`, `!ban` and more.
 
 ## Requirements
@@ -48,7 +48,7 @@ COC_CLAN_TAG = "Your tag"
 
 1. Clone this repo through `git` or download it directly.
    - `$ git clone https://github.com/VortexShrimp/skebenga.git`
-2. Create a `.env` file in the root of the project and add your sensitive data.
+2. Create a `.env` file in the root of the project and add your sensitive data. The bot will do this for you and remind you if you forget.
 3. Install the dependencies. See the requirements above.
    - `$ poetry install`
 4. Run the bot.
