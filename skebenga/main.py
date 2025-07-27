@@ -54,8 +54,9 @@ class ClashBot(commands.Bot):
             listeners.on_clan_level_changed,
             listeners.on_clan_description_changed,
             listeners.on_clan_badge_changed,
-            listeners.on_member_donations_sent,
-            listeners.on_member_donations_received,
+            listeners.on_clan_member_role_changed,
+            listeners.on_clan_member_donations_sent,
+            listeners.on_clan_member_donations_received,
 
             # War Events
             listeners.on_new_war,

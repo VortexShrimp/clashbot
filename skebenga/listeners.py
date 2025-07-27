@@ -1,5 +1,4 @@
 import coc
-import os
 import aiohttp
 import discord
 
@@ -123,8 +122,36 @@ async def on_clan_badge_changed(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
 
     await send_embed_via_webhook(bot_globals.DISCORD_CLAN_WEBHOOK, embed)
 
+@coc.ClanEvents.member_role()
+async def on_clan_member_role_changed(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
+    print('[debug] on_member_role_changed called')
+    
+    old_role: coc.Role = old_member.role if old_member.role else coc.Role.member
+    new_role: coc.Role = new_member.role if new_member.role else coc.Role.member
+
+    # Nothing to do if the role hasn't changed.
+    if old_role == new_role:
+        return
+
+    embed = discord.Embed(colour=discord.Colour.orange(),
+                          title='Role Changed')
+
+    embed.add_field(name='Member',
+                    value=f'{new_member.name} ({new_member.tag})',
+                    inline=False)
+    
+    embed.add_field(name='Old',
+                    value=old_role.in_game_name,
+                    inline=True)
+    
+    embed.add_field(name='New',
+                    value=new_role.in_game_name,
+                    inline=True)
+    
+    await send_embed_via_webhook(bot_globals.DISCORD_CLAN_WEBHOOK, embed)
+
 @coc.ClanEvents.member_donations()
-async def on_member_donations_sent(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
+async def on_clan_member_donations_sent(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
     print('[debug] on_member_donations_sent called')
 
     donation_count: int = new_member.donations - old_member.donations
@@ -142,7 +169,7 @@ async def on_member_donations_sent(old_member: coc.ClanMember, new_member: coc.C
     await send_embed_via_webhook(bot_globals.DISCORD_DONATIONS_WEBHOOK, embed)
 
 @coc.ClanEvents.member_received()
-async def on_member_donations_received(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
+async def on_clan_member_donations_received(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
     print('[debug] on_member_donations_received called')
 
     received_count: int = new_member.received - old_member.received
@@ -180,7 +207,7 @@ async def on_war_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None
     print('[debug] on_war_attack called')
     
     # If the attacker is in our clan make the color green.
-    colour : discord.Colour = discord.Colour.green() if attack.attacker.clan.tag == bot_globals.BOT_COC_CLANTAG else discord.Colour.red()
+    colour : discord.Colour = discord.Colour.green() if attack.attacker.clan.tag == bot_globals.COC_CLANTAG else discord.Colour.red()
     description: str = f'New attack from {attack.attacker.clan.name}'
 
     embed = discord.Embed(colour=colour,
@@ -189,20 +216,22 @@ async def on_war_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None
     
     embed.add_field(name='Attacker',
                     value=f'{attack.attacker.name} ({attack.attacker.tag})\n'
-                          f'`{"Town Hall:":<15}` `{attack.attacker.town_hall:<3}`\n'
-                          f'`{"Number:":<15}` `{attack.attacker.map_position:<3}`',
+                          f'`{"Town Hall:":<15}` `{attack.attacker.town_hall:<4}`\n'
+                          f'`{"Number:":<15}` `{attack.attacker.map_position:<4}`',
                     inline=False)
     
     embed.add_field(name='Defender',
                     value=f'{attack.defender.name} ({attack.defender.tag})\n'
-                          f'`{"Town Hall:":<15}` `{attack.defender.town_hall:<3}`\n'
-                          f'`{"Number:":<15}` `{attack.defender.map_position:<3}`',
+                          f'`{"Town Hall:":<15}` `{attack.defender.town_hall:<4}`\n'
+                          f'`{"Number:":<15}` `{attack.defender.map_position:<4}`',
                     inline=False)
 
-    embed.add_field(name='Stats',
-                    value=f'`{"Stars:":<15}` `{attack.stars:<3}`\n'
-                          f'`{"Destruction:":<15}` `{attack.destruction:<3}%`',
+    embed.add_field(name='Results',
+                    value=f'`{"Stars:":<15}` `{attack.stars:<4}`\n'
+                          f'`{"Destruction:":<15}` `{attack.destruction:<4}%`',
                     inline=False)
+    
+    # TODO: Add updated war stats, like current stars, destruction and time until war ends.
 
     clan_badge: coc.Badge | None = attack.attacker.clan.badge if attack.attacker.clan else None
     if clan_badge is not None and hasattr(clan_badge, "url"):
