@@ -1,6 +1,3 @@
-import listeners
-from listeners import globals
-
 import discord
 from discord.ext import commands
 
@@ -8,6 +5,10 @@ import coc
 import os
 import dotenv
 import asyncio
+
+import globals
+import listeners_clan
+import listeners_war
 
 class ClashBot(commands.Bot):
     def __init__(self, coc_client: coc.EventsClient, coc_clantag: str) -> None:
@@ -49,19 +50,19 @@ class ClashBot(commands.Bot):
         # Add our custom event listeners.
         self.coc_client.add_events(
             # Clan Events
-            listeners.on_clan_member_join,
-            listeners.on_clan_member_leave,
-            listeners.on_clan_level_changed,
-            listeners.on_clan_description_changed,
-            listeners.on_clan_badge_changed,
-            listeners.on_clan_member_role_changed,
-            listeners.on_clan_member_donations_sent,
-            listeners.on_clan_member_donations_received,
+            listeners_clan.on_member_join,
+            listeners_clan.on_member_leave,
+            listeners_clan.on_level,
+            listeners_clan.on_description,
+            listeners_clan.on_badge,
+            listeners_clan.on_member_role,
+            listeners_clan.on_member_donations_sent,
+            listeners_clan.on_member_donations_received,
 
             # War Events
-            listeners.on_new_war,
-            listeners.on_war_attack,
-            listeners.on_war_state_changed
+            listeners_war.on_new_war,
+            listeners_war.on_attack,
+            listeners_war.on_state
         )
 
 async def main() -> None:
