@@ -6,27 +6,13 @@ import coc
 import discord
 import globals
 
-@coc.WarEvents.new_war()
-async def on_new_war(new_war: coc.ClanWar) -> None:
-    print('[debug] on_new_war called')
-    
-    embed = discord.Embed(colour=discord.Colour.yellow(),
-                          title='New War',
-                          # TODO: Neaten this up...
-                          description=f'A new `{new_war.team_size}vs{new_war.team_size}` war has started against `{new_war.opponent.name} ({new_war.opponent.tag}) level {new_war.opponent.level}`.')
-
-    clan_badge: coc.Badge | None = new_war.clan.badge if new_war.clan else None
-    if clan_badge is not None and hasattr(clan_badge, "url"):
-        embed.set_thumbnail(url=clan_badge.url)
-
-    await globals.send_embed_via_webhook(globals.DISCORD_WAR_WEBHOOK, embed)
-
 @coc.WarEvents.war_attack()
 async def on_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None:
     print('[debug] on_war_attack called')
     
     # If the attacker is in our clan make the color green.
     colour : discord.Colour = discord.Colour.green() if attack.attacker.clan.tag == globals.COC_CLANTAG else discord.Colour.red()
+
     description: str = f'New attack from {attack.attacker.clan.name}'
 
     embed = discord.Embed(colour=colour,
@@ -47,7 +33,9 @@ async def on_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None:
 
     embed.add_field(name='Results',
                     value=f'`{"Stars:":<15}` `{attack.stars:<4}`\n'
-                          f'`{"Destruction:":<15}` `{attack.destruction:<4}%`',
+                          f'`{"Destruction:":<15}` `{attack.destruction:<4}%`\n'
+                          # TODO: Make this mintues and seconds.
+                          f'`{"Duration:":<15}` `{attack.duration:<4}s`',
                     inline=False)
     
     # TODO: Add updated war stats, like current stars, destruction and time until war ends.
@@ -68,6 +56,22 @@ async def on_state(old_war: coc.ClanWar, new_war: coc.ClanWar) -> None:
     embed = discord.Embed(colour=discord.Colour.dark_grey(),
                           title='War State Update',
                           description=f'Clan war state has changed from {old_war_state.in_game_name} to {new_war_state.in_game_name}')
+
+    clan_badge: coc.Badge | None = new_war.clan.badge if new_war.clan else None
+    if clan_badge is not None and hasattr(clan_badge, "url"):
+        embed.set_thumbnail(url=clan_badge.url)
+
+    await globals.send_embed_via_webhook(globals.DISCORD_WAR_WEBHOOK, embed)
+
+@coc.WarEvents.new_war()
+async def on_new_war(new_war: coc.ClanWar) -> None:
+    print('[debug] on_new_war called')
+
+    title: str = 'New War' if new_war.is_cwl is False else 'New Clan War League'
+    
+    embed = discord.Embed(colour=discord.Colour.yellow(),
+                          title=title,
+                          description=f'A new `{new_war.team_size}vs{new_war.team_size}` war has started against `{new_war.opponent.name} ({new_war.opponent.tag}) level {new_war.opponent.level}`.')
 
     clan_badge: coc.Badge | None = new_war.clan.badge if new_war.clan else None
     if clan_badge is not None and hasattr(clan_badge, "url"):

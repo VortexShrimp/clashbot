@@ -60,9 +60,9 @@ class ClashBot(commands.Bot):
             listeners_clan.on_member_donations_received,
 
             # War Events
-            listeners_war.on_new_war,
             listeners_war.on_attack,
-            listeners_war.on_state
+            listeners_war.on_state,
+            listeners_war.on_new_war,
         )
 
 async def main() -> None:
