@@ -56,9 +56,9 @@ async def on_level(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
     if old_clan.level == new_clan.level:
         return
     
-    embed = discord.Embed(colour=discord.Colour.yellow(),
+    embed = discord.Embed(colour=discord.Colour.green(),
                           title='Level Up',
-                          description=f'The clan has leveled up from {old_clan.level} to {new_clan.level}.')
+                          description=f'{new_clan.name} has leveled up to {new_clan.level}!')
     
     if new_clan.badge is not None and hasattr(new_clan.badge, "url"):
         embed.set_thumbnail(url=new_clan.badge.url)
@@ -109,6 +109,9 @@ async def on_badge(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
                           description='The clan\'s badge has been updated.')
 
     embed.set_thumbnail(url=new_badge.url)
+    embed.add_field(name='Old',
+                    value=f'[Old Badge]({old_badge.url})',
+                    inline=False)
 
     await globals.send_embed_via_webhook(globals.DISCORD_CLAN_WEBHOOK, embed)
 
@@ -152,10 +155,6 @@ async def on_member_donations_sent(old_member: coc.ClanMember, new_member: coc.C
                           title='Donations Sent',
                           description=f'{new_member.name} `{new_member.tag}` has donated: {donation_count} troops.')
     
-    # clan_badge: coc.Badge | None = new_member.clan.badge if new_member.clan else None
-    # if clan_badge is not None and hasattr(clan_badge, "url"):
-    #     embed.set_thumbnail(url=clan_badge.url)
-
     await globals.send_embed_via_webhook(globals.DISCORD_DONATIONS_WEBHOOK, embed)
 
 @coc.ClanEvents.member_received()
@@ -169,10 +168,5 @@ async def on_member_donations_received(old_member: coc.ClanMember, new_member: c
     embed = discord.Embed(colour=discord.Colour.red(),
                           title='Donations Received',
                           description=f'{new_member.name} `{new_member.tag}` has received: {received_count} troops.')
-
-    # Too much spam.
-    # clan_badge: coc.Badge | None = new_member.clan.badge if new_member.clan else None
-    # if clan_badge is not None and hasattr(clan_badge, "url"):
-    #     embed.set_thumbnail(url=clan_badge.url)
 
     await globals.send_embed_via_webhook(globals.DISCORD_DONATIONS_WEBHOOK, embed)
