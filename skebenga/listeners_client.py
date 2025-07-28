@@ -14,6 +14,7 @@ async def on_maintenance_start() -> None:
     embed = discord.Embed(colour=discord.Colour.red(),
                           title='Maintenance Started',
                           description='Maintenance is currently underway.')
+    
     await globals.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
 
 @coc.ClientEvents.maintenance_end()
@@ -24,6 +25,7 @@ async def on_maintenance_completion(start_time: datetime.datetime) -> None:
     embed = discord.Embed(colour=discord.Colour.green(),
                           title='Maintenance Ended',
                           description=f'Maintenance has ended after {duration}.')
+
     await globals.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
 
 @coc.ClientEvents.clan_games_start()
@@ -45,7 +47,6 @@ async def on_clan_games_end() -> None:
                           description='Check your rewards.')
     
     await globals.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
-    
 
 @coc.ClientEvents.raid_weekend_start()
 async def on_raid_weekend_start() -> None:

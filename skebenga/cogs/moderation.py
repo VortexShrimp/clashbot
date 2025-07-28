@@ -8,6 +8,16 @@ class ModeratorCog(commands.Cog):
     @commands.command(name='kick')
     @commands.has_permissions(administrator=True)
     async def kick(self, ctx: commands.Context, member: discord.Member, *, reason=None):
+        """
+        Kick a member from the server.
+
+        This command requires the user to have administrator permissions.
+
+        Args:
+            member (discord.Member): The member to kick.
+            reason (str, optional): The reason for the kick.
+        """
+
         await member.kick(reason=reason)
         if reason is None:
             await ctx.send(f'User {member} has been kicked.')
@@ -16,17 +26,13 @@ class ModeratorCog(commands.Cog):
 
     @commands.command(name='ban')
     @commands.has_permissions(administrator=True)
-    async def ban(self, ctx: commands.Context, member: discord.Member, *, reason=None):
+    async def ban(self, ctx: commands.Context, member: discord.Member, *, reason: str | None = None):
         await member.ban(reason=reason)
+
         if reason is None:
             await ctx.send(f'User {member} has been banned.')
         else:
-            await ctx.send(f'User {member} has been banned for {reason}.')
-
-    @commands.command(name='say')
-    @commands.has_permissions(administrator=True)
-    async def say(self, ctx: commands.Context, *, message: str):
-        await ctx.send(message)
+            await ctx.send(f'User {member} has been banned for: {reason}.')
 
     @commands.command(name='purge')
     @commands.has_permissions(administrator=True)
@@ -47,7 +53,6 @@ class ModeratorCog(commands.Cog):
 
     @kick.error
     @ban.error
-    @say.error
     @purge.error
     async def handle_error(self, ctx: commands.Context, error):
         if isinstance(error, commands.MissingPermissions):
