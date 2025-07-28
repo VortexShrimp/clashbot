@@ -34,6 +34,7 @@ DISCORD_TOKEN = "App token"
 DISCORD_CLAN_WEBHOOK = "Webhook URL"
 DISCORD_WAR_WEBHOOK = "Webhook URL"
 DISCORD_DONATIONS_WEBHOOK = "Webhook URL"
+DISCORD_GENERAL_WEBHOOK = "Webhook URL"
 
 # Clash of Clans information.
 # You will need a free account on their developer portal.
@@ -52,4 +53,4 @@ COC_CLAN_TAG = "Your tag"
 3. Install the dependencies. See the requirements above.
    - `$ poetry install`
 4. Run the bot.
-   - `$ poetry run python skebenga/main.py`
+   - `$ poetry run python skebenga/main.py` or use `$ \.run.bat` on Windows.

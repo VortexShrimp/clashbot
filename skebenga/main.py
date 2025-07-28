@@ -109,6 +109,10 @@ async def main() -> None:
     if globals.DISCORD_DONATIONS_WEBHOOK is None:
         raise ValueError('[error] DISCORD_DONATIONS_WEBHOOK not found in .env file. Donations will not be sent to Discord.')
 
+    globals.DISCORD_GENERAL_WEBHOOK = os.getenv('DISCORD_GENERAL_WEBHOOK')
+    if globals.DISCORD_GENERAL_WEBHOOK is None:
+        raise ValueError('[error] DISCORD_GENERAL_WEBHOOK not found in .env file. General events will not be sent to Discord.')
+
     async with coc.EventsClient() as coc_client:
         # Attempt to log into the CoC API.
         try:
@@ -139,18 +143,15 @@ if __name__ == '__main__':
         # Create a new .env file with the required fields.
         with open('.env', 'w') as env_file:
             env_file.write(
-                '# Standard Discord bot application token.\n'
                 'DISCORD_TOKEN=\n'
 
-                '# Webhook URLs for sending clan, war and donation events.\n'
                 'DISCORD_CLAN_WEBHOOK=\n'
                 'DISCORD_WAR_WEBHOOK=\n'
                 'DISCORD_DONATIONS_WEBHOOK=\n'
+                'DISCORD_GENERAL_WEBHOOK=\n'
 
-                '# Clash of Clans API credentials.\n'
                 'COC_EMAIL=\n'
                 'COC_PASSWORD=\n'
 
-                '# The tag of the clan to track.\n'
                 'COC_CLAN_TAG=\n'
             )

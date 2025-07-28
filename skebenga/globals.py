@@ -14,6 +14,8 @@ import aiohttp
 DISCORD_CLAN_WEBHOOK: str | None = None
 DISCORD_WAR_WEBHOOK: str | None = None
 DISCORD_DONATIONS_WEBHOOK: str | None = None
+DISCORD_GENERAL_WEBHOOK: str | None = None
+
 COC_CLANTAG: str | None = None
 
 # TODO: Move this to a separate utility module instead of globals.
