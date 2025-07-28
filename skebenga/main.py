@@ -19,12 +19,17 @@ class ClashBot(commands.Bot):
         super().__init__(command_prefix='!', intents=discord.Intents.all())
 
     async def setup_hook(self) -> None:
+        # Remove the default help command so we can make our own.
+        self.remove_command('help')
+
         await self.setup_cogs()
         await self.setup_coc_api()
 
     async def on_ready(self) -> None:
         print(f'[info] Logged in as {self.user}.')
-        activity: discord.Activity = discord.Activity(type=discord.ActivityType.watching, name='Clash of Clans')
+
+        # Set our custom bot activity.
+        activity: discord.Activity = discord.Activity(type=discord.ActivityType.watching, name=f'Clash of Clans | {self.command_prefix}help')
         await self.change_presence(activity=activity)
 
     # Load any cogs found in the cogs directory.
