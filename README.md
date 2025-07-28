@@ -7,7 +7,7 @@ A bot for tracking Clash of Clans activity over Discord.
 - Tracks clan events such as member joins & leaves, description & badge changes and more.
 - Track war events such as preparation starts, wins & losses.
 - Tracks clan member donations and their amounts.
-- Useful commands for getting info about other clans & players with `!clan_info` and `!player_info`
+- Useful commands for getting info about other clans & players with `!clan` and `!player`
 - A few moderation commands, like `!kick`, `!ban` and more.
 
 ## Requirements
