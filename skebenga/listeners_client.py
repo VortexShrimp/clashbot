@@ -5,6 +5,7 @@ Module that holds all the general client listeners for the bot.
 import coc
 import discord
 import globals
+import utilities
 import datetime
 
 @coc.ClientEvents.maintenance_start()
@@ -14,8 +15,8 @@ async def on_maintenance_start() -> None:
     embed = discord.Embed(colour=discord.Colour.red(),
                           title='Maintenance Started',
                           description='Maintenance is currently underway.')
-    
-    await globals.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
+
+    await utilities.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
 
 @coc.ClientEvents.maintenance_end()
 async def on_maintenance_completion(start_time: datetime.datetime) -> None:
@@ -26,7 +27,7 @@ async def on_maintenance_completion(start_time: datetime.datetime) -> None:
                           title='Maintenance Ended',
                           description=f'Maintenance has ended after {duration}.')
 
-    await globals.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
+    await utilities.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
 
 @coc.ClientEvents.clan_games_start()
 async def on_clan_games_start() -> None:
@@ -35,8 +36,8 @@ async def on_clan_games_start() -> None:
     embed = discord.Embed(colour=discord.Colour.blue(),
                           title='Clan Games Started',
                           description='Participate to earn rewards.')
-    
-    await globals.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
+
+    await utilities.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
 
 @coc.ClientEvents.clan_games_end()
 async def on_clan_games_end() -> None:
@@ -45,8 +46,8 @@ async def on_clan_games_end() -> None:
     embed = discord.Embed(colour=discord.Colour.blue(),
                           title='Clan Games Ended',
                           description='Check your rewards.')
-    
-    await globals.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
+
+    await utilities.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
 
 @coc.ClientEvents.raid_weekend_start()
 async def on_raid_weekend_start() -> None:
@@ -54,8 +55,8 @@ async def on_raid_weekend_start() -> None:
     embed = discord.Embed(colour=discord.Colour.purple(),
                           title='Raid Weekend Started',
                           description='Participate to earn loot and glory.')
-    
-    await globals.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
+
+    await utilities.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
 
 @coc.ClientEvents.raid_weekend_end()
 async def on_raid_weekend_end() -> None:
@@ -65,4 +66,4 @@ async def on_raid_weekend_end() -> None:
                           title='Raid Weekend Ended',
                           description='Check your loot and glory earned.')
 
-    await globals.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)
+    await utilities.send_embed_via_webhook(globals.DISCORD_GENERAL_WEBHOOK, embed)

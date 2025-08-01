@@ -5,6 +5,7 @@ Module that holds all the WarEvent listeners for the bot.
 import coc
 import discord
 import globals
+from skebenga import utilities
 
 @coc.WarEvents.war_attack()
 async def on_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None:
@@ -44,7 +45,7 @@ async def on_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None:
     if clan_badge is not None and hasattr(clan_badge, "url"):
         embed.set_thumbnail(url=clan_badge.url)
 
-    await globals.send_embed_via_webhook(globals.DISCORD_WAR_WEBHOOK, embed)
+    await utilities.send_embed_via_webhook(globals.DISCORD_WAR_WEBHOOK, embed)
 
 @coc.WarEvents.state()
 async def on_state(old_war: coc.ClanWar, new_war: coc.ClanWar) -> None:
@@ -61,7 +62,7 @@ async def on_state(old_war: coc.ClanWar, new_war: coc.ClanWar) -> None:
     if clan_badge is not None and hasattr(clan_badge, "url"):
         embed.set_thumbnail(url=clan_badge.url)
 
-    await globals.send_embed_via_webhook(globals.DISCORD_WAR_WEBHOOK, embed)
+    await utilities.send_embed_via_webhook(globals.DISCORD_WAR_WEBHOOK, embed)
 
 @coc.WarEvents.new_war()
 async def on_new_war(new_war: coc.ClanWar) -> None:
@@ -77,4 +78,4 @@ async def on_new_war(new_war: coc.ClanWar) -> None:
     if clan_badge is not None and hasattr(clan_badge, "url"):
         embed.set_thumbnail(url=clan_badge.url)
 
-    await globals.send_embed_via_webhook(globals.DISCORD_WAR_WEBHOOK, embed)
+    await utilities.send_embed_via_webhook(globals.DISCORD_WAR_WEBHOOK, embed)
