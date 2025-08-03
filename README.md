@@ -1,27 +1,41 @@
 # Skebenga
 
-A bot for tracking Clash of Clans activity over Discord.
+A Discord bot for tracking Clash of Clans activity on a server.
 
 ## Features
 
-> Note: This bot currently only supports one server at a time.
-
-- Tracks clan events such as member joins & leaves, description & badge changes and more.
-- Track war events such as preparation starts, wins & losses.
+- Tracks clan events such as member joins & leaves, description & badge changes and much more.
+- Tracks war events such as preparation starts, wins & losses and starts & ends.
 - Tracks clan member donations and their amounts.
-- Useful commands for getting info about other clans & players with `!clan` and `!player`
-- A few moderation commands, like `!kick`, `!ban` and more.
+- Useful commands for getting info about other clans, players, and wars with `!clan`, `!player` & `!war`.
+- Moderation commands that require administrator, such as `!kick`, `!ban` and more.
+
+> Note: This bot currently only supports one server at a time.
 
 ## Requirements
 
-This project uses `poetry` to easily manage its dependencies and environment.
+### APIs
 
-- Install [python](https://www.python.org/downloads/). `version 3.13+`
-- Install [pipx](https://pipx.pypa.io/latest/installation/).
-  - `$ python -m pip install --user pipx`
-  - `$ python -m pipx ensurepath`
-- Install [poetry](https://python-poetry.org/).
-  - `$ pipx install poetry`
+This bot requires access to the Discord & Clash of Clans APIs, both of which require accounts.
+
+- Create a [Clash of Clans](https://developer.clashofclans.com/#/getting-started) developer account to access the API.
+- Create a bot from the [Discord Developer Portal](https://discord.com/developers) and add it to your server.
+
+### Environment
+
+This project uses `poetry` to easily manage its dependencies and environment. It is recommended to install `pipx` for managing `poetry`.
+
+1. Install [python](https://www.python.org/downloads/). `version 3.13+`
+2. Install [pipx](https://pipx.pypa.io/latest/installation/).
+
+   - `$ python -m pip install --user pipx`
+   - `$ python -m pipx ensurepath`
+
+3. Install [poetry](https://python-poetry.org/).
+
+   - `$ pipx install poetry`
+
+### Configuration
 
 Sensitive data, such as API tokens and webhook urls, is stored in a `.env` file in the project's root directory.
 
@@ -39,20 +53,20 @@ DISCORD_DONATIONS_WEBHOOK = "Webhook URL"
 DISCORD_GENERAL_WEBHOOK = "Webhook URL"
 
 # Clash of Clans information.
-# You will need a free account on their developer portal.
+# You will need to create a fre account on their developer portal.
 COC_EMAIL = "Your email"
 COC_PASSWORD = "Your password"
 
-# Your main clan that you want to track events for.
+# The tag of the main clan that you wish to track.
 COC_CLAN_TAG = "Your tag"
 ```
 
-## Usage Example
+### Usage
 
 1. Clone this repo through `git` or download it directly.
    - `$ git clone https://github.com/VortexShrimp/skebenga.git`
-2. Create a `.env` file in the root of the project and add your sensitive data. The bot will do this for you and remind you if you forget.
-3. Install the dependencies. See the requirements above.
+2. Install the dependencies. See the requirements above.
    - `$ poetry install`
+3. Create a `.env` file in the root of the project and add your sensitive data. The bot will do this for you and remind you if you forget.
 4. Run the bot.
    - `$ poetry run python skebenga/main.py` or use `$ \.run.bat` on Windows.
