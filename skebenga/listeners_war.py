@@ -16,7 +16,6 @@ async def on_attack(attack: coc.WarAttack, current_war: coc.ClanWar) -> None:
     colour : discord.Colour = discord.Colour.green() if attack.attacker.clan.tag == globals.COC_CLANTAG else discord.Colour.red()
 
     description: str = f'New attack from {attack.attacker.clan.name}'
-
     embed = discord.Embed(colour=colour,
                           title='War Attack',
                           description=description)
