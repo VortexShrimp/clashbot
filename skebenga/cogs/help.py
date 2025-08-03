@@ -8,7 +8,7 @@ class HelpCog(commands.Cog):
     def __init__(self, bot: ClashBot) -> None:
         self.bot: ClashBot = bot
 
-    @commands.command(name='help')
+    @commands.command(name='help', brief='Display a list of all available commands.')
     async def help(self, ctx: commands.Context, *, category_name: str | None = None) -> None:
         """
         Display a list of all available commands and their descriptions.
@@ -24,7 +24,7 @@ class HelpCog(commands.Cog):
         if category_name is None:
             embed: discord.Embed = discord.Embed(
                 title='Help',
-                description=f'Use `{self.bot.command_prefix}help <category>` to see category commands.',
+                description=f'A list of available command categories.',
                 color=utilities.get_bot_guild_role_colour(ctx)
             )
 
@@ -38,6 +38,8 @@ class HelpCog(commands.Cog):
                     value=cog.__doc__ or 'No description provided.',
                     inline=False
                 )
+            
+            embed.set_footer(text='Use `!help <category_name>` to see specific commands.')
 
             await ctx.send(embed=embed)
         else:
@@ -53,7 +55,7 @@ class HelpCog(commands.Cog):
             
             # If the category is not found, send an error message.
             if category is None:
-                await ctx.send("Category not found.")
+                await ctx.send(embed=utilities.error_embed(f'Category `{category_name}` not found.'))
                 return
 
             embed = discord.Embed(
@@ -65,8 +67,7 @@ class HelpCog(commands.Cog):
             for command in category.get_commands():
                 embed.add_field(
                     name=command.name,
-                    # TODO: Figure out how to get the command description only.
-                    value=command.help or 'No description provided.',
+                    value=command.brief or 'No description provided.',
                     inline=False
                 )
 
@@ -79,11 +80,9 @@ class HelpCog(commands.Cog):
         """
 
         if isinstance(error, commands.CommandInvokeError):
-            print(f'[error] CommandInvokeError in help command: {error}')
-            await ctx.send('An error occurred while processing your request. Please try again later.')
+            await ctx.send(embed=utilities.error_embed('An error occurred while processing your request. Please try again later.'))
         else:
-            print(f'[error] Unexpected error in help command: {error}')
-            await ctx.send('An unexpected error occurred. Please try again later.')
+            await ctx.send(embed=utilities.error_embed('An unexpected error occurred. Please try again later.'))
 
 async def setup(bot: ClashBot):
     await bot.add_cog(HelpCog(bot))

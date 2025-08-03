@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+import utilities
+
 class ModeratorCog(commands.Cog):
     """
     Some useful moderation commands for the server. Most of these commands require the user to have administrator permissions.
@@ -9,7 +11,7 @@ class ModeratorCog(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot: commands.Bot = bot
 
-    @commands.command(name='kick')
+    @commands.command(name='kick', brief='Kick a member from the server.')
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
     async def kick(self, ctx: commands.Context, member: discord.Member, *, reason: str | None = None) -> None:
@@ -28,7 +30,7 @@ class ModeratorCog(commands.Cog):
         else:
             await ctx.send(f'User {member} has been kicked for {reason}.')
 
-    @commands.command(name='ban')
+    @commands.command(name='ban', brief='Ban a member from the server.')
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
     async def ban(self, ctx: commands.Context, member: discord.Member, *, reason: str | None = None) -> None:
@@ -47,7 +49,7 @@ class ModeratorCog(commands.Cog):
         else:
             await ctx.send(f'User {member} has been banned for: {reason}.')
 
-    @commands.command(name='purge')
+    @commands.command(name='purge', brief='Purge a specified number of messages from the channel.')
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
     async def purge(self, ctx: commands.Context, amount: int) -> None:
@@ -55,6 +57,7 @@ class ModeratorCog(commands.Cog):
         Purge a specified number of messages from the channel.
 
         Args:
+            ctx (commands.Context): The context in which the command was invoked.
             amount (int): The number of messages to delete.
         """
 
@@ -80,10 +83,7 @@ class ModeratorCog(commands.Cog):
         else:
             message = f'{error}'
 
-        embed = discord.Embed(colour=discord.Colour.red(),
-                              title='Error',
-                              description=message)
-        await ctx.send(embed=embed)
+        await ctx.send(embed=utilities.error_embed(message))
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(ModeratorCog(bot))

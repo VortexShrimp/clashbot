@@ -8,13 +8,13 @@ import utilities
 
 class ClashOfClansCog(commands.Cog):
     """
-    Clash of Clans related commands.
+    Commands for interacting with the Clash of Clans API.
     """
 
     def __init__(self, bot: ClashBot) -> None:
         self.bot: ClashBot = bot
 
-    @commands.command(name='player')
+    @commands.command(name='player', brief='Get information about a Clash of Clans player by tag.')
     async def player(self, ctx: commands.Context, player_tag: str) -> None:
         """
         Get information about a Clash of Clans player by their tag.
@@ -25,19 +25,19 @@ class ClashOfClansCog(commands.Cog):
 
         # Make sure the player's tag is valid.
         if not coc.utils.is_valid_tag(player_tag):
-            await ctx.reply(embed=utilities.default_error_embed('The tag that you provided has an invalid format.'))
+            await ctx.reply(embed=utilities.error_embed('The tag that you provided has an invalid format.'))
             return
-        
+ 
         # Attempt to get the player.
         try:
             player: coc.Player = await self.bot.coc_client.get_player(player_tag)
         except coc.NotFound:
-            await ctx.reply(embed=utilities.default_error_embed(f'Unable to find the player with the provided tag ({player_tag}).'))
+            await ctx.reply(embed=utilities.error_embed(f'Unable to find the player with the provided tag ({player_tag}).'))
             return
         except coc.Maintenance:
-            await ctx.reply(embed=utilities.default_error_embed('The Clash of Clans API is currently under maintenance.'))
+            await ctx.reply(embed=utilities.error_embed('The Clash of Clans API is currently under maintenance.'))
             return
-        
+
         # Create the embed with player information.
         embed: discord.Embed = discord.Embed(colour=utilities.get_bot_guild_role_colour(ctx), title=f'Player Info', description=f'Information for player `{player.name} ({player.tag})`')
 
@@ -53,7 +53,7 @@ class ClashOfClansCog(commands.Cog):
                             f'Capital Contribution: {player.clan_capital_contributions}\n'
                             f'[Open in game]({player_clan.share_link})',
                             inline=False)
-            
+
         embed.add_field(name='Home Base',
                         value=f'Town Hall Level: {player.town_hall}\n'
                         f'{'' if player.town_hall > 11 else 'Town Hall Weapon Level: ' + str(player.town_hall_weapon) + '\n'}'
@@ -77,10 +77,11 @@ class ClashOfClansCog(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(name='members')
+    @commands.command(name='members', brief='Get a list of members in a Clash of Clans clan.')
     async def members(self, ctx: commands.Context, clan_tag: str | None = None) -> None:
         """
         Get a list of members in a Clash of Clans clan.
+
         Args:
             clan_tag (str): The tag of the clan to get members from.
         """
@@ -90,7 +91,7 @@ class ClashOfClansCog(commands.Cog):
 
         # Make sure the clan's tag is valid.
         if not coc.utils.is_valid_tag(desired_clan_tag):
-            await ctx.reply(embed=utilities.default_error_embed(f'Invalid clan tag format provided `{desired_clan_tag}`.'))
+            await ctx.reply(embed=utilities.error_embed(f'Invalid clan tag format provided `{desired_clan_tag}`.'))
             return
 
         # Attempt to get the clan.
@@ -103,10 +104,10 @@ class ClashOfClansCog(commands.Cog):
             await ctx.reply(embed=embed)
             return
         except coc.Maintenance:
-            await ctx.reply(embed=utilities.default_error_embed('The Clash of Clans API is currently under maintenance.'))
+            await ctx.reply(embed=utilities.error_embed('The Clash of Clans API is currently under maintenance.'))
             return
         except coc.GatewayError:
-            await ctx.reply(embed=utilities.default_error_embed('Unexpected gateway error.'))
+            await ctx.reply(embed=utilities.error_embed('Unexpected gateway error.'))
             return
 
         embed: discord.Embed = discord.Embed(colour=discord.Colour.yellow(),
@@ -132,7 +133,7 @@ class ClashOfClansCog(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(name='clan')
+    @commands.command(name='clan', brief='Get information about a Clash of Clans clan by its tag.')
     async def clan(self, ctx: commands.Context, clan_tag: str | None = None) -> None:
         """
         Get information about a Clash of Clans clan by its tag.
@@ -146,17 +147,17 @@ class ClashOfClansCog(commands.Cog):
 
         # Make sure the clan's tag is valid.
         if not coc.utils.is_valid_tag(desired_clan_tag):
-            await ctx.reply(embed=utilities.default_error_embed(f'Invalid clan tag format provided `({desired_clan_tag})`.'))
+            await ctx.reply(embed=utilities.error_embed(f'Invalid clan tag format provided `({desired_clan_tag})`.'))
             return
 
         # Attempt to get the clan.
         try:
             clan: coc.Clan = await self.bot.coc_client.get_clan(desired_clan_tag)
         except coc.NotFound:
-            await ctx.reply(embed=utilities.default_error_embed(f'Unable to get the desired clan with tag `({desired_clan_tag})`.'))
+            await ctx.reply(embed=utilities.error_embed(f'Unable to get the desired clan with tag `({desired_clan_tag})`.'))
             return
         except coc.Maintenance:
-            await ctx.reply(embed=utilities.default_error_embed('The Clash of Clans API is currently under maintenance.'))
+            await ctx.reply(embed=utilities.error_embed('The Clash of Clans API is currently under maintenance.'))
             return
 
         embed: discord.Embed = discord.Embed(colour=utilities.get_bot_guild_role_colour(ctx),
@@ -225,7 +226,7 @@ class ClashOfClansCog(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(name='war')
+    @commands.command(name='war', brief='Get information about the current war of a Clash of Clans clan.')
     async def war(self, ctx: commands.Context, clan_tag: str | None = None) -> None:
         """
         Get information about the current war of a Clash of Clans clan.
@@ -239,25 +240,25 @@ class ClashOfClansCog(commands.Cog):
 
         # Make sure the clan's tag is valid.
         if not coc.utils.is_valid_tag(desired_clan_tag):
-            await ctx.reply(embed=utilities.default_error_embed(f'Invalid clan tag format provided `({desired_clan_tag})`.'))
+            await ctx.reply(embed=utilities.error_embed(f'Invalid clan tag format provided `({desired_clan_tag})`.'))
             return
         
         # Attempt to get the current war for the clan.
         try:
             current_war: coc.ClanWar | None = await self.bot.coc_client.get_current_war(desired_clan_tag)
         except coc.NotFound:
-            await ctx.reply(embed=utilities.default_error_embed(f'Unable to find the clan with tag `({desired_clan_tag})` or it is not currently in a war.'))
+            await ctx.reply(embed=utilities.error_embed(f'Unable to find the clan with tag `({desired_clan_tag})` or it is not currently in a war.'))
             return
         except coc.PrivateWarLog:
-            await ctx.reply(embed=utilities.default_error_embed(f'The clan with tag `({desired_clan_tag})` has a private war log.'))
+            await ctx.reply(embed=utilities.error_embed(f'The clan with tag `({desired_clan_tag})` has a private war log.'))
             return
         except coc.Maintenance:
-            await ctx.reply(embed=utilities.default_error_embed('The Clash of Clans API is currently under maintenance.'))
+            await ctx.reply(embed=utilities.error_embed('The Clash of Clans API is currently under maintenance.'))
             return
         
         war_state: coc.wars.WarState = current_war.state
         if war_state == coc.wars.WarState.not_in_war:
-            await ctx.reply(embed=utilities.default_error_embed(f'The clan with tag `({desired_clan_tag})` is not currently in a war.'))
+            await ctx.reply(embed=utilities.error_embed(f'The clan with tag `({desired_clan_tag})` is not currently in a war.'))
             return
         
         home_clan: coc.WarClan | None = current_war.clan
@@ -319,7 +320,7 @@ class ClashOfClansCog(commands.Cog):
         else:
             message = f'{error}'
 
-        await ctx.send(embed=utilities.default_error_embed(message))
+        await ctx.send(embed=utilities.error_embed(message))
 
 async def setup(bot: ClashBot):
     await bot.add_cog(ClashOfClansCog(bot))

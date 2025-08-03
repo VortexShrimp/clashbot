@@ -38,7 +38,7 @@ def get_bot_guild_role_colour(ctx: commands.Context) -> discord.Colour:
 
     return bot.colour
 
-def default_error_embed(message: str) -> discord.Embed:
+def error_embed(message: str) -> discord.Embed:
     """
     Create a red embed with title 'Error' and a given message.
 

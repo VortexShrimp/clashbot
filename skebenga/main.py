@@ -29,6 +29,8 @@ class ClashBot(commands.Bot):
         await self.setup_cogs()
         await self.setup_coc_api()
 
+        await self.tree.sync()
+
     async def on_ready(self) -> None:
         print(f'[info] Logged in as {self.user}.')
 
@@ -103,7 +105,7 @@ class ClashBot(commands.Bot):
 
 async def bot_main() -> None:
     discord_token: str | None = os.getenv('DISCORD_TOKEN', None)
-    if discord_token is None or discord_token == '':
+    if discord_token is None:
         raise ValueError('[error] DISCORD_TOKEN not found in .env file.')
 
     coc_email: str | None = os.getenv('COC_EMAIL', None)
