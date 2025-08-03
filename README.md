@@ -31,7 +31,7 @@ This project uses `poetry` to easily manage its dependencies and environment. It
    - `$ python -m pip install --user pipx`
    - `$ python -m pipx ensurepath`
 
-3. Install [poetry](https://python-poetry.org/).
+3. Install [poetry](https://python-poetry.org/) with `pipx`.
 
    - `$ pipx install poetry`
 
@@ -61,12 +61,16 @@ COC_PASSWORD = "Your password"
 COC_CLAN_TAG = "Your tag"
 ```
 
-### Usage
+## Usage
 
-1. Clone this repo through `git` or download it directly.
+1. Setup your [API](#apis) accounts.
+2. Configure the [environment](#environment).
+3. Clone this repo through `git` or download it directly.
    - `$ git clone https://github.com/VortexShrimp/skebenga.git`
-2. Install the dependencies. See the requirements above.
+4. Install the dependencies with `poetry`.
    - `$ poetry install`
-3. Create a `.env` file in the root of the project and add your sensitive data. The bot will do this for you and remind you if you forget.
-4. Run the bot.
-   - `$ poetry run python skebenga/main.py` or use `$ \.run.bat` on Windows.
+5. [Configure](#configuration) the bot with a `.env` file.
+6. Run the bot.
+   - `$ poetry run python skebenga/main.py`
+
+> On Windows you can use `$ .\run.bat` to easily run the bot once dependencies have been installed.
