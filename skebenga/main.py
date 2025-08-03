@@ -1,10 +1,9 @@
-import discord
-from discord.ext import commands
-
 import coc
 import os
 import dotenv
 import asyncio
+import discord
+from discord.ext import commands
 
 import globals
 import listeners_clan
@@ -12,10 +11,15 @@ import listeners_client
 import listeners_war
 
 class ClashBot(commands.Bot):
+    """
+    The main class that creates the Discord bot & interacts with the Clash of Clans API.
+    """
+
     def __init__(self, coc_client: coc.EventsClient, coc_clantag: str) -> None:
         self.coc_client: coc.EventsClient = coc_client
         self.coc_clantag: str = coc_clantag
 
+        # Initialize the bot with a command prefix and intents.
         super().__init__(command_prefix='!', intents=discord.Intents.all())
 
     async def setup_hook(self) -> None:
@@ -37,10 +41,19 @@ class ClashBot(commands.Bot):
         for file in os.listdir(f'./skebenga/cogs'):
             if file.endswith('.py'):
                 try:
-                    await self.load_extension(f'cogs.{file[:-3]}')
+                    # Remove the .py extension.
+                    cog_name: str = file[:-3]
+                    await self.load_extension(f'cogs.{cog_name}')
+
                     print(f'[info] Loaded {file} extension.')
-                except Exception as error:
-                    print(f'[error] Failed to load extension {file}. Error {error}.')
+                except commands.ExtensionNotFound as error:
+                    print(f'[error] Failed to find extension {file}.\nError {error}.')
+                except commands.ExtensionAlreadyLoaded as error:
+                    print(f'[error] Extension {file} is already loaded.\nError {error}.')
+                except commands.NoEntryPointError as error:
+                    print(f'[error] Extension {file} has no setup function.\nError {error}.')
+                except commands.ExtensionFailed as error:
+                    print(f'[error] Failed to load extension {file}.\nError {error}.')
 
     async def setup_coc_api(self) -> None:
         self.coc_client.add_clan_updates(self.coc_clantag)
@@ -52,8 +65,15 @@ class ClashBot(commands.Bot):
             
             # Start tracking all members of the clan.
             self.coc_client.add_player_updates(*[member.tag for member in clan.members])
-        except coc.ClashOfClansException:
-            print(f'[error] Failed to start tracking {self.coc_clantag}')
+        except coc.NotFound as error:
+            print(f'[error] Failed to find clan with tag {self.coc_clantag}.')
+            return
+        except coc.Maintenance as error:
+            print(f'[error] CoC API is currently under maintenance.')
+            return
+        except coc.GatewayError as error:
+            print(f'[error] Failed to connect to CoC API.')
+            return
 
         # Register our custom event listeners.
         self.coc_client.add_events(
@@ -81,40 +101,40 @@ class ClashBot(commands.Bot):
             listeners_war.on_new_war,
         )
 
-async def main() -> None:
-    discord_token: str | None = os.getenv('DISCORD_TOKEN')
-    if discord_token is None:
+async def bot_main() -> None:
+    discord_token: str | None = os.getenv('DISCORD_TOKEN', None)
+    if discord_token is None or discord_token == '':
         raise ValueError('[error] DISCORD_TOKEN not found in .env file.')
 
-    coc_email: str | None = os.getenv('COC_EMAIL')
+    coc_email: str | None = os.getenv('COC_EMAIL', None)
     if coc_email is None:
         raise ValueError('[error] COC_EMAIL not found in .env file.')
 
-    coc_password: str | None = os.getenv('COC_PASSWORD')
+    coc_password: str | None = os.getenv('COC_PASSWORD', None)
     if coc_password is None:
         raise ValueError('[error] COC_PASSWORD not found in .env file.')
 
     # Make sure the clan tag is provided and valid.
-    globals.COC_CLANTAG = os.getenv('COC_CLAN_TAG')
+    globals.COC_CLANTAG = os.getenv('COC_CLAN_TAG', None)
     if globals.COC_CLANTAG is None:
         raise ValueError('[error] COC_CLAN_TAG not found in .env file.')
 
     if not coc.utils.is_valid_tag(globals.COC_CLANTAG):
         raise ValueError(f'[error] Invalid clan tag format provided: {globals.COC_CLANTAG}')
 
-    globals.DISCORD_CLAN_WEBHOOK = os.getenv('DISCORD_CLAN_WEBHOOK')
+    globals.DISCORD_CLAN_WEBHOOK = os.getenv('DISCORD_CLAN_WEBHOOK', None)
     if globals.DISCORD_CLAN_WEBHOOK is None:
         raise ValueError('[error] DISCORD_CLAN_WEBHOOK not found in .env file. Clan events will not be sent to Discord.')
 
-    globals.DISCORD_WAR_WEBHOOK = os.getenv('DISCORD_WAR_WEBHOOK')
+    globals.DISCORD_WAR_WEBHOOK = os.getenv('DISCORD_WAR_WEBHOOK', None)
     if globals.DISCORD_WAR_WEBHOOK is None:
         raise ValueError('[error] DISCORD_WAR_WEBHOOK not found in .env file. War events will not be sent to Discord.')
 
-    globals.DISCORD_DONATIONS_WEBHOOK = os.getenv('DISCORD_DONATIONS_WEBHOOK')
+    globals.DISCORD_DONATIONS_WEBHOOK = os.getenv('DISCORD_DONATIONS_WEBHOOK', None)
     if globals.DISCORD_DONATIONS_WEBHOOK is None:
         raise ValueError('[error] DISCORD_DONATIONS_WEBHOOK not found in .env file. Donations will not be sent to Discord.')
 
-    globals.DISCORD_GENERAL_WEBHOOK = os.getenv('DISCORD_GENERAL_WEBHOOK')
+    globals.DISCORD_GENERAL_WEBHOOK = os.getenv('DISCORD_GENERAL_WEBHOOK', None)
     if globals.DISCORD_GENERAL_WEBHOOK is None:
         raise ValueError('[error] DISCORD_GENERAL_WEBHOOK not found in .env file. General events will not be sent to Discord.')
 
@@ -131,32 +151,35 @@ async def main() -> None:
         # Run the bot.
         await bot.start(discord_token)
 
+def create_env_file() -> None:
+    with open('.env', 'w') as env_file:
+        env_file.write(
+            'DISCORD_TOKEN=\n'
+
+            'DISCORD_CLAN_WEBHOOK=\n'
+            'DISCORD_WAR_WEBHOOK=\n'
+            'DISCORD_DONATIONS_WEBHOOK=\n'
+            'DISCORD_GENERAL_WEBHOOK=\n'
+
+            'COC_EMAIL=\n'
+            'COC_PASSWORD=\n'
+
+            'COC_CLAN_TAG=\n'
+        )
+
 if __name__ == '__main__':
     # Search for a .env file in the current directory.
-    if dotenv.load_dotenv() == True:
-        loop = asyncio.new_event_loop()
-
-        try:
-            loop.run_until_complete(main())
-            loop.run_forever()
-        except (KeyboardInterrupt, ValueError) as error:
-            print(error)
-    # If the .env file does not exist, create one.
+    if not os.path.exists('.env'):
+        print('[info] No .env file found. Creating a new one.')
+        create_env_file()
     else:
-        print('[error] Failed to load ".env" file. Creating one for you. Please fill it out before running the bot again.')
+        if dotenv.load_dotenv() is True:
+            loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
 
-        # Create a new .env file with the required fields.
-        with open('.env', 'w') as env_file:
-            env_file.write(
-                'DISCORD_TOKEN=\n'
-
-                'DISCORD_CLAN_WEBHOOK=\n'
-                'DISCORD_WAR_WEBHOOK=\n'
-                'DISCORD_DONATIONS_WEBHOOK=\n'
-                'DISCORD_GENERAL_WEBHOOK=\n'
-
-                'COC_EMAIL=\n'
-                'COC_PASSWORD=\n'
-
-                'COC_CLAN_TAG=\n'
-            )
+            try:
+                loop.run_until_complete(bot_main())
+                loop.run_forever()
+            except ValueError as error:
+                print(f'[error] Failed to load .env file. Error: {str(error)}')
+            except KeyboardInterrupt as error:
+                print(f'[info] Bot stopped by user. Error: {str(error)}')
