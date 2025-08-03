@@ -1,7 +1,8 @@
 import coc
 import discord
 from discord.ext import commands
-from skebenga.main import ClashBot
+
+from main import ClashBot
 
 class ClashOfClansCog(commands.Cog):
     def __init__(self, bot: ClashBot) -> None:

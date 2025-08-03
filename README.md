@@ -4,6 +4,8 @@ A bot for tracking Clash of Clans activity over Discord.
 
 ## Features
 
+> Note: This bot currently only supports one server at a time.
+
 - Tracks clan events such as member joins & leaves, description & badge changes and more.
 - Track war events such as preparation starts, wins & losses.
 - Tracks clan member donations and their amounts.
@@ -14,7 +16,7 @@ A bot for tracking Clash of Clans activity over Discord.
 
 This project uses `poetry` to easily manage its dependencies and environment.
 
-- Install [python](https://www.python.org/downloads/).
+- Install [python](https://www.python.org/downloads/). `version 3.13+`
 - Install [pipx](https://pipx.pypa.io/latest/installation/).
   - `$ python -m pip install --user pipx`
   - `$ python -m pipx ensurepath`
