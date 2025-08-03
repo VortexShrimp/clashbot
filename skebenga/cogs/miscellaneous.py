@@ -3,19 +3,16 @@ from discord.ext import commands
 
 class MiscellaneousCog(commands.Cog):
     """
-    A cog for miscellaneous commands.
-    
-    This includes commands like ping, say, and other utility commands.
+    A collection of random commands for users.
     """
-    def __init__(self, bot: commands.Bot):
+
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot: commands.Bot = bot
 
     @commands.command(name='ping')
-    async def ping(self, ctx: commands.Context):
+    async def ping(self, ctx: commands.Context) -> None:
         """
-        Check the bot's latency.
-
-        This command replies with the current latency of the bot in milliseconds.
+        Check the bot's latency in milliseconds.
         """
 
         latency_milliseconds: int = round(self.bot.latency * 1000)
@@ -27,8 +24,6 @@ class MiscellaneousCog(commands.Cog):
     async def say(self, ctx: commands.Context, *, message: str):
         """
         Make the bot say a message.
-
-        This command requires the user to have administrator permissions.
 
         Args:
             message (str): The message to send.
@@ -42,7 +37,7 @@ class MiscellaneousCog(commands.Cog):
 
     @commands.command(name='reply')
     @commands.has_permissions(administrator=True)
-    async def reply(self, ctx: commands.Context, *, message: str):
+    async def reply(self, ctx: commands.Context, *, message: str) -> None:
         """
         Make the bot reply to a message.
 
@@ -53,11 +48,10 @@ class MiscellaneousCog(commands.Cog):
         await ctx.reply(content=message)
 
     @commands.command(name='avatar')
-    async def avatar(self, ctx: commands.Context, member: discord.Member = None):
+    @commands.guild_only()
+    async def avatar(self, ctx: commands.Context, member: discord.Member = None) -> None:
         """
-        Get the avatar URL of a member.
-
-        If no member is specified, it defaults to the command invoker.
+        Get the avatar URL of a member. If no member is specified, it will return the author's avatar.
 
         Args:
             member (discord.Member, optional): The member whose avatar URL to retrieve. Defaults to None.
@@ -73,7 +67,7 @@ class MiscellaneousCog(commands.Cog):
     @say.error
     @reply.error
     @avatar.error
-    async def handle_error(self, ctx: commands.Context, error):
+    async def handle_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
         if isinstance(error, commands.MissingPermissions):
             await ctx.reply('You do not have permission to use this command.')
         elif isinstance(error, commands.MissingRequiredArgument):

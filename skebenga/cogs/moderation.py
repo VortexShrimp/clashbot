@@ -2,16 +2,19 @@ import discord
 from discord.ext import commands
 
 class ModeratorCog(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    """
+    Some useful moderation commands for the server. Most of these commands require the user to have administrator permissions.
+    """
+
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot: commands.Bot = bot
 
     @commands.command(name='kick')
     @commands.has_permissions(administrator=True)
-    async def kick(self, ctx: commands.Context, member: discord.Member, *, reason=None):
+    @commands.guild_only()
+    async def kick(self, ctx: commands.Context, member: discord.Member, *, reason: str | None = None) -> None:
         """
         Kick a member from the server.
-
-        This command requires the user to have administrator permissions.
 
         Args:
             member (discord.Member): The member to kick.
@@ -19,6 +22,7 @@ class ModeratorCog(commands.Cog):
         """
 
         await member.kick(reason=reason)
+
         if reason is None:
             await ctx.send(f'User {member} has been kicked.')
         else:
@@ -26,7 +30,16 @@ class ModeratorCog(commands.Cog):
 
     @commands.command(name='ban')
     @commands.has_permissions(administrator=True)
-    async def ban(self, ctx: commands.Context, member: discord.Member, *, reason: str | None = None):
+    @commands.guild_only()
+    async def ban(self, ctx: commands.Context, member: discord.Member, *, reason: str | None = None) -> None:
+        """
+        Ban a member from the server.
+
+        Args:
+            member (discord.Member): The member to ban.
+            reason (str, optional): The reason for the ban.
+        """
+
         await member.ban(reason=reason)
 
         if reason is None:
@@ -36,25 +49,30 @@ class ModeratorCog(commands.Cog):
 
     @commands.command(name='purge')
     @commands.has_permissions(administrator=True)
-    async def purge(self, ctx: commands.Context, amount: int):
+    @commands.guild_only()
+    async def purge(self, ctx: commands.Context, amount: int) -> None:
+        """
+        Purge a specified number of messages from the channel.
+
+        Args:
+            amount (int): The number of messages to delete.
+        """
+
         if amount < 1:
-            response: discord.Message = await ctx.reply("Please specify a number greater than 0.")
-            await response.delete(delay=3)
+            response: discord.Message = await ctx.reply('Please specify a number greater than 0.')
+            await response.delete(delay=5)
             return
         
-        if isinstance(ctx.channel, discord.TextChannel):
-            await ctx.channel.purge(limit=amount)
-            # Send a confirmation and delete it after a small delay.
-            confirmation: discord.Message = await ctx.send(f"Deleted {amount} messages.")
-            await confirmation.delete(delay=3)
-        else:
-            response: discord.Message = await ctx.reply("This command can only be used in server text channels.")
-            await response.delete(delay=3)
+        await ctx.channel.purge(limit=amount)
+
+        # Send a confirmation and delete it after a small delay.
+        confirmation: discord.Message = await ctx.send(f'Deleted {amount} messages.')
+        await confirmation.delete(delay=5)
 
     @kick.error
     @ban.error
     @purge.error
-    async def handle_error(self, ctx: commands.Context, error):
+    async def handle_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
         if isinstance(error, commands.MissingPermissions):
             message = 'You do not have the required permissions to use this command.'
         elif isinstance(error, commands.MissingRequiredArgument):

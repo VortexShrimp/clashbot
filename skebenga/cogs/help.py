@@ -5,11 +5,11 @@ import utilities
 from main import ClashBot
 
 class HelpCog(commands.Cog):
-    def __init__(self, bot: ClashBot):
+    def __init__(self, bot: ClashBot) -> None:
         self.bot: ClashBot = bot
 
     @commands.command(name='help')
-    async def help(self, ctx: commands.Context, category_name: str | None = None) -> None:
+    async def help(self, ctx: commands.Context, *, category_name: str | None = None) -> None:
         """
         Display a list of all available commands and their descriptions.
 
@@ -20,35 +20,24 @@ class HelpCog(commands.Cog):
             category_name (str, optional): The name of the category to show commands for.
         """
 
-        print(f'[info] Help command invoked by {ctx.author} in guild {ctx.guild.name if ctx.guild else 'DM'}')
-
         # If category_name is not provided, show all categories.
         if category_name is None:
             embed: discord.Embed = discord.Embed(
                 title='Help',
-                description='List of available commands',
+                description=f'Use `{self.bot.command_prefix}help <category>` to see category commands.',
                 color=utilities.get_bot_guild_role_colour(ctx)
             )
 
-            categories: str = ''
             for cog_name, cog in self.bot.cogs.items():
                 # Skip the help cog itself.
                 if cog_name == self.__cog_name__:
                     continue
 
-                categories += f'{cog_name[:-3]}\n'
-
-            embed.add_field(
-                name='Categories',
-                value=categories,
-                inline=False
-            )
-
-            embed.add_field(
-                name='Usage',
-                value=f'Use `{self.bot.command_prefix}help <category>` to see category commands.',
-                inline=False
-            )
+                embed.add_field(
+                    name=cog_name[:-3],  # Remove 'Cog' suffix.
+                    value=cog.__doc__ or 'No description provided.',
+                    inline=False
+                )
 
             await ctx.send(embed=embed)
         else:
@@ -84,7 +73,7 @@ class HelpCog(commands.Cog):
             await ctx.send(embed=embed)
 
     @help.error
-    async def handle_error(ctx: commands.Context, error: commands.CommandError):
+    async def handle_error(ctx: commands.Context, error: commands.CommandError) -> None:
         """
         Handle errors for the help command.
         """

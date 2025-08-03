@@ -5,6 +5,10 @@ from discord.ext import commands
 from main import ClashBot
 
 class ClashOfClansCog(commands.Cog):
+    """
+    Clash of Clans related commands.
+    """
+
     def __init__(self, bot: ClashBot) -> None:
         self.bot: ClashBot = bot
 

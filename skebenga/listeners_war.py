@@ -54,6 +54,16 @@ async def on_state(old_war: coc.ClanWar, new_war: coc.ClanWar) -> None:
 
     new_war_state: coc.wars.WarState = new_war.state
     old_war_state: coc.wars.WarState = old_war.state
+
+    # If the war state has not changed, do nothing.
+    if new_war_state == old_war_state:
+        return
+
+    # War has just ended.
+    # TODO: Add a message the shows the members who did not attack.
+    if new_war_state == coc.wars.WarState.war_ended and old_war_state == coc.wars.WarState.in_war:
+        attacks: list[coc.WarAttack] = old_war.attacks
+        ...
     
     embed = discord.Embed(colour=discord.Colour.dark_grey(),
                           title='War State Update',
