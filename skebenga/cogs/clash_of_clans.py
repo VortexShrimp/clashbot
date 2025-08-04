@@ -313,14 +313,14 @@ class ClashOfClansCog(commands.Cog):
     @members.error
     @war.error
     async def handle_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
-        message: str = ''
-
-        if isinstance(error, commands.MissingRequiredArgument):
-            message = f'Missing required argument for this command.\n`{error.param}`'
+        if isinstance(error, commands.MissingPermissions):
+            message: str = 'You do not have permission to use this command.'
+        elif isinstance(error, commands.MissingRequiredArgument):
+            message: str = f'Missing required argument: {error.param.name}.'
         else:
-            message = f'{error}'
+            message: str = f'An unknown error occurred while processing your command: {str(error)}.'
 
-        await ctx.send(embed=utilities.error_embed(message))
+        await ctx.reply(embed=utilities.error_embed(message))
 
 async def setup(bot: ClashBot):
     await bot.add_cog(ClashOfClansCog(bot))

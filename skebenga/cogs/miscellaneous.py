@@ -48,7 +48,7 @@ class MiscellaneousCog(commands.Cog):
         # Send the message.
         await ctx.send(message)
 
-    @commands.command(name='avatar', brief='Get a member\'s avatar.')
+    @commands.command(name='avatar', brief='Get a member\'s avatar. If no member is provided, returns your own.')
     @commands.guild_only()
     async def avatar(self, ctx: commands.Context, member: discord.Member = None) -> None:
         """
@@ -70,11 +70,13 @@ class MiscellaneousCog(commands.Cog):
     @avatar.error
     async def handle_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
         if isinstance(error, commands.MissingPermissions):
-            await ctx.reply(embed=utilities.error_embed('You do not have permission to use this command.'))
+            message: str = 'You do not have permission to use this command.'
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.reply(embed=utilities.error_embed(f'Missing required argument: {error.param.name}.'))
+            message: str = f'Missing required argument: {error.param.name}.'
         else:
-            await ctx.reply(embed=utilities.error_embed('An error occurred while processing your command.'))
+            message: str = f'An unknown error occurred while processing your command: {str(error)}.'
+
+        await ctx.reply(embed=utilities.error_embed(message))
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(MiscellaneousCog(bot))

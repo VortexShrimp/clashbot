@@ -183,5 +183,5 @@ if __name__ == '__main__':
                 loop.run_forever()
             except ValueError as error:
                 print(f'[error] Failed to load .env file. Error: {str(error)}')
-            except KeyboardInterrupt as error:
-                print(f'[info] Bot stopped by user. Error: {str(error)}')
+            except KeyboardInterrupt:
+                print(f'[info] Bot stopped by user.')

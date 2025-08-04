@@ -9,22 +9,19 @@ class HelpCog(commands.Cog):
         self.bot: ClashBot = bot
 
     @commands.command(name='help', brief='Display a list of all available commands.')
-    async def help(self, ctx: commands.Context, *, category_name: str | None = None) -> None:
+    async def help(self, ctx: commands.Context, category_name: str | None = None) -> None:
         """
         Display a list of all available commands and their descriptions.
 
-        If a category name is provided, it will show commands in that category.
-
         Args:
-            ctx (commands.Context): The context in which the command was invoked.
             category_name (str, optional): The name of the category to show commands for.
         """
 
         # If category_name is not provided, show all categories.
         if category_name is None:
             embed: discord.Embed = discord.Embed(
-                title='Help',
-                description=f'A list of available command categories.',
+                title='Help - Categories',
+                description=f'Use `{self.bot.command_prefix}help <category_name>` to see specific commands.',
                 color=utilities.get_bot_guild_role_colour(ctx)
             )
 
@@ -33,13 +30,7 @@ class HelpCog(commands.Cog):
                 if cog_name == self.__cog_name__:
                     continue
 
-                embed.add_field(
-                    name=cog_name[:-3],  # Remove 'Cog' suffix.
-                    value=cog.__doc__ or 'No description provided.',
-                    inline=False
-                )
-            
-            embed.set_footer(text='Use `!help <category_name>` to see specific commands.')
+                embed.add_field(name=cog_name[:-3], value=cog.__doc__ or 'No description provided.', inline=False)
 
             await ctx.send(embed=embed)
         else:
@@ -74,15 +65,15 @@ class HelpCog(commands.Cog):
             await ctx.send(embed=embed)
 
     @help.error
-    async def handle_error(ctx: commands.Context, error: commands.CommandError) -> None:
-        """
-        Handle errors for the help command.
-        """
-
-        if isinstance(error, commands.CommandInvokeError):
-            await ctx.send(embed=utilities.error_embed('An error occurred while processing your request. Please try again later.'))
+    async def handle_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
+        if isinstance(error, commands.MissingPermissions):
+            message: str = 'You do not have permission to use this command.'
+        elif isinstance(error, commands.MissingRequiredArgument):
+            message: str = f'Missing required argument: {error.param.name}.'
         else:
-            await ctx.send(embed=utilities.error_embed('An unexpected error occurred. Please try again later.'))
+            message: str = f'An unknown error occurred while processing your command: {str(error)}.'
+
+        await ctx.reply(embed=utilities.error_embed(message))
 
 async def setup(bot: ClashBot):
     await bot.add_cog(HelpCog(bot))

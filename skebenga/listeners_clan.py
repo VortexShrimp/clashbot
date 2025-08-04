@@ -121,8 +121,11 @@ async def on_badge(old_clan: coc.Clan, new_clan: coc.Clan) -> None:
 async def on_member_role(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
     print('[debug] on_member_role_changed called')
     
-    old_role: coc.Role = old_member.role if old_member.role else coc.Role.member
-    new_role: coc.Role = new_member.role if new_member.role else coc.Role.member
+    old_role: coc.Role | None = old_member.role if old_member.role else None
+    new_role: coc.Role | None = new_member.role if new_member.role else None
+
+    if old_role is None or new_role is None:
+        return
 
     # Nothing to do if the role hasn't changed.
     if old_role == new_role:

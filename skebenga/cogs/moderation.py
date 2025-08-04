@@ -5,7 +5,7 @@ import utilities
 
 class ModeratorCog(commands.Cog):
     """
-    Some useful moderation commands for the server. Most of these commands require the user to have administrator permissions.
+    Standard server moderation tools that require administrator permissions.
     """
 
     def __init__(self, bot: commands.Bot) -> None:
@@ -57,7 +57,6 @@ class ModeratorCog(commands.Cog):
         Purge a specified number of messages from the channel.
 
         Args:
-            ctx (commands.Context): The context in which the command was invoked.
             amount (int): The number of messages to delete.
         """
 
@@ -77,13 +76,13 @@ class ModeratorCog(commands.Cog):
     @purge.error
     async def handle_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
         if isinstance(error, commands.MissingPermissions):
-            message = 'You do not have the required permissions to use this command.'
+            message: str = 'You do not have permission to use this command.'
         elif isinstance(error, commands.MissingRequiredArgument):
-            message = f'Missing required argument for this command.\n`{error.param}`'
+            message: str = f'Missing required argument: {error.param.name}.'
         else:
-            message = f'{error}'
+            message: str = f'An unknown error occurred while processing your command: {str(error)}.'
 
-        await ctx.send(embed=utilities.error_embed(message))
+        await ctx.reply(embed=utilities.error_embed(message))
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(ModeratorCog(bot))
