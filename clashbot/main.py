@@ -40,7 +40,7 @@ class ClashBot(commands.Bot):
 
     # Load any cogs found in the cogs directory.
     async def setup_cogs(self) -> None:
-        for file in os.listdir(f'./skebenga/cogs'):
+        for file in os.listdir(f'./clashbot/cogs'):
             if file.endswith('.py'):
                 try:
                     # Remove the .py extension.

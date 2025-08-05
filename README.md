@@ -1,4 +1,4 @@
-# Skebenga
+# ClashBot
 
 A Discord bot for tracking Clash of Clans activity on a server.
 

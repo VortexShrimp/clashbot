@@ -1,7 +1,7 @@
 [project]
-name = "skebenga"
-version = "0.1.0"
-description = "An epic Discord bot for tracking Clash of Clans activity."
+name = "clashbot"
+version = "0.2.0"
+description = "A Discord bot for tracking Clash of Clans activity."
 authors = [
     {name = "vrtx",email = "vortexshrimp@gmail.com"}
 ]

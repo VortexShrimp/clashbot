@@ -1,2 +1,2 @@
 @echo off
-poetry run python skebenga/main.py
+poetry run python clashbot/main.py
