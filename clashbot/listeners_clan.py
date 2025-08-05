@@ -159,8 +159,8 @@ async def on_member_donations_sent(old_member: coc.ClanMember, new_member: coc.C
     embed = discord.Embed(colour=discord.Colour.green(),
                           title='Donations Sent',
                           description=f'{new_member.name} `{new_member.tag}` has donated: {donation_count} troops.')
-    
-    await globals.send_embed_via_webhook(globals.DISCORD_DONATIONS_WEBHOOK, embed)
+
+    await utilities.send_embed_via_webhook_url(globals.DISCORD_DONATIONS_WEBHOOK, embed)
 
 @coc.ClanEvents.member_received()
 async def on_member_donations_received(old_member: coc.ClanMember, new_member: coc.ClanMember) -> None:
