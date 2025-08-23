@@ -66,7 +66,7 @@ COC_CLAN_TAG = "Your tag"
 1. Setup your [API](#apis) accounts.
 2. Configure the [environment](#environment).
 3. Clone this repo through `git` or download it directly.
-   - `$ git clone https://github.com/VortexShrimp/skebenga.git`
+   - `$ git clone https://github.com/radicazz/skebenga.git`
 4. Install the dependencies with `poetry`.
    - `$ poetry install`
 5. [Configure](#configuration) the bot with a `.env` file.
